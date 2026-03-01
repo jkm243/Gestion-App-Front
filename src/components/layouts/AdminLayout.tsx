@@ -20,6 +20,7 @@ export function AdminLayout() {
     { label: 'Utilisateurs', icon: '👥', href: '/admin/users' },
     { label: 'Produits', icon: '📦', href: '/admin/products' },
     { label: 'Ventes', icon: '💰', href: '/admin/sales' },
+    { label: 'Factures', icon: '🧾', href: '/admin/invoices' },
     { label: 'Analytiques', icon: '📈', href: '/admin/analytics' },
   ];
 

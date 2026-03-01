@@ -1,7 +1,18 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { LoginPage } from '../pages/auth/LoginPage';
 import { AdminDashboard } from '../pages/admin/Dashboard';
+import { UsersPage } from '../pages/admin/UsersPage';
+import { ProductsPage } from '../pages/admin/ProductsPage';
+import { SalesPage } from '../pages/admin/SalesPage';
+import { AnalyticsPage } from '../pages/admin/AnalyticsPage';
+import { SettingsPage } from '../pages/admin/SettingsPage';
+import { InvoicesPage } from '../pages/admin/InvoicesPage';
 import { CashierDashboard } from '../pages/cashier/Dashboard';
+import { QuickSalePage } from '../pages/cashier/QuickSalePage';
+import { CartPage } from '../pages/cashier/CartPage';
+import { PaymentPage } from '../pages/cashier/PaymentPage';
+import { HistoryPage } from '../pages/cashier/HistoryPage';
+import { StockPage } from '../pages/cashier/StockPage';
 import { NotFoundPage, UnauthorizedPage } from '../pages/ErrorPages';
 import { AdminLayout } from "../components/layouts/AdminLayout";
 import { CashierLayout } from "../components/layouts/CashierLayout";
@@ -27,6 +38,12 @@ export function AppRouter() {
           <Route element={<AdminRoute />}>
             <Route element={<AdminLayout />}>
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/admin/users" element={<UsersPage />} />
+                <Route path="/admin/products" element={<ProductsPage />} />
+                <Route path="/admin/sales" element={<SalesPage />} />
+                <Route path="/admin/analytics" element={<AnalyticsPage />} />
+                <Route path="/admin/invoices" element={<InvoicesPage />} />
+                <Route path="/admin/settings" element={<SettingsPage />} />
               {/* Additional admin routes will go here */}
             </Route>
           </Route>
@@ -35,6 +52,11 @@ export function AppRouter() {
           <Route element={<CashierRoute />}>
             <Route element={<CashierLayout />}>
               <Route path="/cashier" element={<CashierDashboard />} />
+              <Route path="/cashier/quick" element={<QuickSalePage />} />
+              <Route path="/cashier/cart" element={<CartPage />} />
+              <Route path="/cashier/payment" element={<PaymentPage />} />
+              <Route path="/cashier/history" element={<HistoryPage />} />
+              <Route path="/cashier/stock" element={<StockPage />} />
               {/* Additional cashier routes will go here */}
             </Route>
           </Route>

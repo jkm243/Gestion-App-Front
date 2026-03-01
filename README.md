@@ -11,23 +11,9 @@ Application web complète avec deux interfaces distinctes :
 ## ✨ Caractéristiques
 
 ### ✅ Déjà Implémenté
-- ✅ Authentification JWT avec refresh automatique
-- ✅ Système de routage avec protection de routes basée sur les rôles
-- ✅ Layouts admin et facturier
-- ✅ Pages de base (login, dashboards)
-- ✅ Services API génériques
-- ✅ Redux Toolkit pour state management
-- ✅ Form validation avec Zod + React Hook Form
-- ✅ Tailwind CSS + composants réutilisables
+ - ✅ Pages administrateur : Utilisateurs, Produits, Ventes, Factures, Analytics
+ - ✅ Interface facturier : Vente rapide (recherche), Panier, Paiement, Historique, Stock
 
-### 🚀 À Développer
-- Modules CRUD complets (Users, Products, Sales)
-- DataTable component avancé
-- Recherche produit avec barcode
-- Panier d'achat persistant
-- Process de paiement
-- Génération PDF de factures
-- Graphiques (Recharts)
 - Tests (Vitest, Cypress)
 
 ## 🛠️ Tech Stack
@@ -180,7 +166,18 @@ npm run test:coverage
 ### Environment Variables
 ```env
 VITE_API_BASE_URL=https://gestion-app-4ls9.onrender.com/api
+VITE_DEV_LOGIN=true        # facultatif : active un login local (fausses données) pour tester sans backend
 ```
+### Accès facturier
+
+Lorsque `VITE_DEV_LOGIN` est activé, le service de login simule un utilisateur
+et redirige en fonction de son rôle. Pour tester l'interface *cashier*, entrez
+un nom d'utilisateur contenant le mot `cashier` (par exemple `cashier1`).
+Le système retournera un utilisateur de rôle `CASHIER` et vous serez envoyé à
+la route `/cashier`.
+
+Dans un environnement réel, il faut bien sûr un compte existant avec le rôle
+`CASHIER` créé via l'API ou l'interface d'administration.
 
 ### Build Production
 ```bash

@@ -14,7 +14,10 @@ export function CashierLayout() {
   };
 
   const quickActions = [
-    { label: 'Vente Rapide', icon: ShoppingCart, href: '/cashier' },
+     { label: 'Vente Rapide', icon: ShoppingCart, href: '/cashier' },
+     { label: 'Vente rapide', icon: '⚡', href: '/cashier/quick' },
+     { label: 'Panier', icon: '🛒', href: '/cashier/cart' },
+     { label: 'Paiement', icon: '💳', href: '/cashier/payment' },
     { label: 'Historique', icon: Clock, href: '/cashier/history' },
     { label: 'Stock', icon: Package, href: '/cashier/stock' },
   ];
