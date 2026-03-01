@@ -3,6 +3,33 @@ import { User, AuthTokens, LoginFormData } from '../../types';
 
 export const authService = {
   async login(credentials: LoginFormData): Promise<AuthTokens & { user: User }> {
+    // support a local/dev login bypass for frontend testing
+    if (import.meta.env.VITE_DEV_LOGIN === 'true') {
+      // any credentials will work; return a fake admin user
+      // allow selecting a role based on username keyword
+      const isCashier = /cashier/i.test(credentials.username);
+      const roleObj = isCashier
+        ? { id: 2, name: 'CASHIER' as const, description: 'Cashier (dev mode)' }
+        : { id: 1, name: 'ADMIN' as const, description: 'Administrator (dev mode)' };
+      const fakeUser: User = {
+        id: isCashier ? 2 : 1,
+        username: credentials.username,
+        email: `${credentials.username}@example.com`,
+        fullname: 'Dev User',
+        role: roleObj,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      const fakeTokens: AuthTokens = {
+        access_token: 'dev-access-token',
+        refresh_token: 'dev-refresh-token',
+      };
+      localStorage.setItem('access_token', fakeTokens.access_token);
+      localStorage.setItem('refresh_token', fakeTokens.refresh_token);
+      return { ...fakeTokens, user: fakeUser };
+    }
+
     try {
       const response = await apiClient.post('/users/login/', credentials);
       const data = response.data;

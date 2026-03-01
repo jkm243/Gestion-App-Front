@@ -47,8 +47,16 @@ export function LoginPage() {
     }
   };
 
+  // debug display for dev login
+  console.log('env VITE_DEV_LOGIN=', import.meta.env.VITE_DEV_LOGIN);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 flex items-center justify-center px-4">
+      {import.meta.env.VITE_DEV_LOGIN === 'true' && (
+        <div className="absolute top-0 left-0 w-full bg-yellow-200 text-yellow-900 p-2 text-center z-10">
+          <strong>Mode développement :</strong> authentification simulée active
+        </div>
+      )}
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
