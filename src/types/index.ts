@@ -2,7 +2,7 @@
 export type UserRole = 'ADMIN' | 'CASHIER';
 
 export interface Role {
-  id: number;
+  id: string; // uuid
   name: UserRole;
   description: string;
 }
@@ -116,7 +116,7 @@ export interface SignupFormData {
   fullname: string;
   password: string;
   password_confirm: string;
-  role_id: number;
+  role_id?: string; // id could be uuid
 }
 
 export interface ProductFormData {
