@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { invoiceService } from '../../services/api/sales';
 import { Invoice } from '../../types';
-import { FileText, Download } from 'lucide-react';
+import { Download, X } from 'lucide-react';
+import { InvoicePrinter } from '../../components/invoice/InvoicePrinter';
 
 export function InvoicesPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -9,14 +10,15 @@ export function InvoicesPage() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
 
   useEffect(() => {
     setLoading(true);
     invoiceService
-      .getAllInvoices(currentPage, 20)
+      .getAllInvoices(currentPage, 100)
       .then((res) => {
         setInvoices(res.results || []);
-        setTotalPages(Math.ceil((res.count || 0) / 20));
+        setTotalPages(Math.ceil((res.count || 0) / 100));
       })
       .catch((err) => {
         console.error(err);
@@ -38,9 +40,24 @@ export function InvoicesPage() {
     }
   };
 
+  if (selectedInvoice) {
+    return (
+      <div className="p-6">
+        <button
+          onClick={() => setSelectedInvoice(null)}
+          className="flex items-center gap-2 mb-4 px-4 py-2 border rounded hover:bg-gray-50"
+        >
+          <X className="w-4 h-4" />
+          Retour
+        </button>
+        <InvoicePrinter invoice={selectedInvoice} />
+      </div>
+    );
+  }
+
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-semibold mb-4">Factures</h2>
+    <div className="p-6 space-y-4">
+      <h2 className="text-2xl font-semibold">Factures</h2>
       {loading && <p>Chargement…</p>}
       {error && <p className="text-red-600">{error}</p>}
       <div className="overflow-x-auto">
@@ -75,11 +92,11 @@ export function InvoicesPage() {
                 <td className="py-2 px-4">{new Date(f.issue_date).toLocaleDateString('fr-FR')}</td>
                 <td className="py-2 px-4 text-center">
                   <button
-                    onClick={() => handleDownloadPDF(f.id)}
-                    className="p-1 hover:bg-blue-100 rounded transition"
-                    title="Télécharger PDF"
+                    onClick={() => setSelectedInvoice(f)}
+                    className="p-1 hover:bg-green-100 rounded transition mr-2"
+                    title="Voir et imprimer"
                   >
-                    <Download className="w-4 h-4 text-blue-600" />
+                    <Download className="w-4 h-4 text-green-600" />
                   </button>
                 </td>
               </tr>

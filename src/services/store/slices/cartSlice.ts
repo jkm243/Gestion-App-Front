@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { CartItem, Product } from '../../types';
+import { encryptionService } from '../../utils/encryptionService';
 
 export interface CartState {
   items: CartItem[];
@@ -14,9 +15,9 @@ const initialState: CartState = {
 const cartSlice = createSlice({
   name: 'cart',
   initialState: () => {
-    // Load from localStorage if available
-    const saved = localStorage.getItem('cart');
-    return saved ? JSON.parse(saved) : initialState;
+    // Load from encrypted localStorage if available
+    const saved = encryptionService.getEncrypted('cart');
+    return saved || initialState;
   },
   reducers: {
     addToCart(state, action: PayloadAction<{ product: Product; quantity: number }>) {
@@ -28,12 +29,12 @@ const cartSlice = createSlice({
         state.items.push({ product, quantity });
       }
       state.total = state.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-      localStorage.setItem('cart', JSON.stringify(state));
+      encryptionService.setEncrypted('cart', state);
     },
     removeFromCart(state, action: PayloadAction<number>) {
       state.items = state.items.filter((i) => i.product.id !== action.payload);
       state.total = state.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-      localStorage.setItem('cart', JSON.stringify(state));
+      encryptionService.setEncrypted('cart', state);
     },
     updateQuantity(state, action: PayloadAction<{ productId: number; quantity: number }>) {
       const item = state.items.find((i) => i.product.id === action.payload.productId);
@@ -41,12 +42,12 @@ const cartSlice = createSlice({
         item.quantity = Math.max(1, action.payload.quantity);
       }
       state.total = state.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-      localStorage.setItem('cart', JSON.stringify(state));
+      encryptionService.setEncrypted('cart', state);
     },
     clearCart(state) {
       state.items = [];
       state.total = 0;
-      localStorage.removeItem('cart');
+      encryptionService.removeEncrypted('cart');
     },
   },
 });

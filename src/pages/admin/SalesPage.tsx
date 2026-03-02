@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { saleService } from '../../services/api/sales';
 import { Sale } from '../../types';
-import { Eye } from 'lucide-react';
+import { DataTable } from '../../components/tables/DataTable';
 
 export function SalesPage() {
   const [sales, setSales] = useState<Sale[]>([]);
@@ -13,10 +13,10 @@ export function SalesPage() {
   useEffect(() => {
     setLoading(true);
     saleService
-      .getAllSales(currentPage, 20)
+      .getAllSales(currentPage, 100)
       .then((res) => {
         setSales(res.results || []);
-        setTotalPages(Math.ceil((res.count || 0) / 20));
+        setTotalPages(Math.ceil((res.count || 0) / 100));
       })
       .catch((err) => {
         console.error(err);
@@ -26,52 +26,47 @@ export function SalesPage() {
   }, [currentPage]);
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-semibold mb-4">Ventes</h2>
+    <div className="p-6 space-y-4">
+      <h2 className="text-2xl font-semibold">Ventes</h2>
       {loading && <p>Chargement…</p>}
       {error && <p className="text-red-600">{error}</p>}
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="py-2 px-4 border text-left">N° de vente</th>
-              <th className="py-2 px-4 border text-left">Date</th>
-              <th className="py-2 px-4 border text-right">Montant</th>
-              <th className="py-2 px-4 border text-center">Statut</th>
-              <th className="py-2 px-4 border text-center">Méthode</th>
-              <th className="py-2 px-4 border text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sales.map((s) => (
-              <tr key={s.id} className="border-b hover:bg-gray-50">
-                <td className="py-2 px-4 font-medium">{s.sale_number}</td>
-                <td className="py-2 px-4">{new Date(s.sale_date).toLocaleString('fr-FR')}</td>
-                <td className="py-2 px-4 text-right font-semibold">{s.total_amount.toFixed(2)} €</td>
-                <td className="py-2 px-4 text-center">
-                  <span
-                    className={`px-2 py-1 rounded text-xs font-medium ${
-                      s.status === 'COMPLETED'
-                        ? 'bg-green-100 text-green-800'
-                        : s.status === 'PENDING'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}
-                  >
-                    {s.status}
-                  </span>
-                </td>
-                <td className="py-2 px-4 text-center text-sm">{s.payment_method}</td>
-                <td className="py-2 px-4 text-center">
-                  <button className="p-1 hover:bg-blue-100 rounded transition" title="Voir détails">
-                    <Eye className="w-4 h-4 text-blue-600" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <DataTable<Sale>
+        data={sales}
+        columns={[
+          { key: 'sale_number', label: 'N° de vente', sortable: true },
+          {
+            key: 'sale_date',
+            label: 'Date',
+            sortable: true,
+            render: (s) => new Date(s.sale_date).toLocaleString('fr-FR'),
+          },
+          {
+            key: 'total_amount',
+            label: 'Montant',
+            sortable: true,
+            render: (s) => `${s.total_amount.toFixed(2)} €`,
+          },
+          {
+            key: 'status',
+            label: 'Statut',
+            render: (s) => (
+              <span
+                className={`px-2 py-1 rounded text-xs font-medium ${
+                  s.status === 'COMPLETED'
+                    ? 'bg-green-100 text-green-800'
+                    : s.status === 'PENDING'
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : 'bg-red-100 text-red-800'
+                }`}
+              >
+                {s.status}
+              </span>
+            ),
+          },
+          { key: 'payment_method', label: 'Méthode', sortable: true },
+        ]}
+        searchFields={['sale_number', 'payment_method']}
+      />
 
       {/* Pagination */}
       <div className="flex justify-between items-center mt-6">
