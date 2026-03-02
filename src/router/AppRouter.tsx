@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { LoginPage } from '../pages/auth/LoginPage';
 import { AdminDashboard } from '../pages/admin/Dashboard';
 import { UsersPage } from '../pages/admin/UsersPage';
@@ -27,6 +27,9 @@ export function AppRouter() {
   return (
     <Router>
       <Routes>
+        {/* Root redirect */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
+
         {/* Public Routes */}
         <Route element={<PublicRoute />}>
           <Route path="/login" element={<LoginPage />} />
