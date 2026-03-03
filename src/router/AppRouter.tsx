@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { LoginPage } from '../pages/auth/LoginPage';
+import { SignupPage } from '../pages/auth/SignupPage';
 import { AdminDashboard } from '../pages/admin/Dashboard';
 import { UsersPage } from '../pages/admin/UsersPage';
 import { ProductsPage } from '../pages/admin/ProductsPage';
@@ -33,6 +34,7 @@ export function AppRouter() {
         {/* Public Routes */}
         <Route element={<PublicRoute />}>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
         </Route>
 
         {/* Protected Routes */}

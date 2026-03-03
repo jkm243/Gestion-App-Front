@@ -136,6 +136,9 @@ export function LoginPage() {
           {/* Footer */}
           <div className="mt-6 text-center text-xs text-gray-500">
             <p>Démonstration • Version 1.0</p>
+            <p className="mt-2">
+              <a href="/signup" className="text-sm text-blue-600 underline">Créer un compte</a>
+            </p>
           </div>
         </div>
       </div>

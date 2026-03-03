@@ -9,7 +9,12 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
-    "create:test-user": "node scripts/create_test_user.cjs"
+    "create:test-user": "node scripts/create_test_user.cjs",
+    "test:signup": "npx tsx test-signup-flow.ts",
+    "test:auth": "npx tsx test-auth.ts",
+    "test:dev-mode": "npx tsx test-dev-mode.ts",
+    "test:e2e": "cypress open",
+    "test:e2e:headless": "cypress run --spec 'cypress/e2e/signup-login.cy.ts'"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
