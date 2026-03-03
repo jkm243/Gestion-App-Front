@@ -93,6 +93,14 @@ npx cypress open
 # 4. Observer les tests s'exécuter automatiquement
 ```
 
+### Note sur le format de réponse de login
+L'API renvoie désormais un objet `token` contenant `access` et `refresh`.
+Le jeton d'accès (`access`) doit être utilisé comme valeur du header
+`Authorization: Bearer <access>` pour tous les appels protégés. Le script
+`test-auth.ts` illustre ce schéma en se loggant avec un super‑admin
+(`admin`/`Admin@2025`) puis en appelant `/users/all/` et en créant/supprimant
+un utilisateur de test.
+
 ### Option C: Mode Production (Nécessite accès Admin)
 ```bash
 # Cette approche nécessite:

@@ -77,6 +77,8 @@
 - [x] JWT tokens (access + refresh)
 - [x] localStorage persistence
 - [x] Refresh token interceptor
+- [x] Authorization header ajouté automatiquement à toutes les requêtes API
+  (nécessaire pour les opérations admin)
 - [x] Mode DEV pour développement
 - [x] Route guards (Public, Protected, AdminRoute, CashierRoute)
 

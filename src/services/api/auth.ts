@@ -33,14 +33,25 @@ export const authService = {
     try {
       const response = await apiClient.post('/users/login/', credentials);
       const data = response.data;
-      
-      // Store tokens
-      localStorage.setItem('access_token', data.access);
-      localStorage.setItem('refresh_token', data.refresh);
-      
+
+      // the backend now nests tokens inside `token` object; support both
+      // legacy and new formats for backwards compatibility
+      const accessToken =
+        data.token?.access || data.access || data.access_token || '';
+      const refreshToken =
+        data.token?.refresh || data.refresh || data.refresh_token || '';
+
+      // persist tokens so the request interceptor can attach them
+      if (accessToken) {
+        localStorage.setItem('access_token', accessToken);
+      }
+      if (refreshToken) {
+        localStorage.setItem('refresh_token', refreshToken);
+      }
+
       return {
-        access_token: data.access,
-        refresh_token: data.refresh,
+        access_token: accessToken,
+        refresh_token: refreshToken,
         user: data.user,
       };
     } catch (error) {

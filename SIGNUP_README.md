@@ -37,6 +37,18 @@ npx cypress open
 - ✅ Refresh token automatique
 - ✅ Route guards basés sur les rôles
 
+> **Super‑admin de démonstration**
+> ```json
+> {
+>   "username": "admin",
+>   "password": "Admin@2025"
+> }
+> ```
+> Ce compte génère un jeton (`token.access` / `token.refresh`) qui doit être
+> utilisé dans l'en‑tête `Authorization: Bearer <access>` pour accéder aux
+> opérations administrateur. Le frontend gère cela automatiquement via
+> l'intercepteur Axios.
+
 ### 🎯 Redirections
 - ✅ Admin → `/admin/dashboard`
 - ✅ Cashier → `/cashier/dashboard`

@@ -229,6 +229,25 @@ npx cypress run --spec "cypress/e2e/signup-login.cy.ts"
 - `/role/all/` retourne **401** si non-authentifié
 - Fallback: SignupPage affiche les rôles par défaut (ADMIN, CASHIER)
 
+### Nouveau Format de Token / Super‑admin
+- L'API renvoie désormais la réponse de login sous la forme : 
+   ```json
+   {
+      "token": { "refresh": "...", "access": "..." },
+      "user": { /* objet utilisateur */ }
+   }
+   ```
+   Le frontend extrait `token.access` et `token.refresh` puis les stocke
+   en `localStorage` sous les clés `access_token`/`refresh_token`.
+   L'intercepteur Axios (`src/services/api/client.ts`) attache
+   automatiquement `Authorization: Bearer <access_token>` à **toutes**
+   les requêtes suivantes.
+
+   Un super‑admin (credentials fournis par l'équipe backend) peut
+   ainsi se connecter, extraire ce token et l'utiliser pour accéder aux
+   opérations protégées (`/users/all/`, `/users/update/`, etc.)
+   directement depuis l'interface ou via des scripts comme `test-auth.ts`.
+
 ### Tests en Production
 - Supprimer `VITE_DEV_LOGIN=true` du `.env.local`
 - Attendre un endpoint public pour signup

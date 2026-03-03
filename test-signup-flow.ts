@@ -86,15 +86,14 @@ async function testLogin(username: string, password: string): Promise<TestResult
       username,
       password,
     });
-    return {
-      success: true,
-      message: `✅ Login RÉUSSI pour ${username}`,
-      data: {
-        user: response.data.user,
-        access_token: response.data.access?.substring(0, 20) + '...',
-        refresh_token: response.data.refresh?.substring(0, 20) + '...',
-      },
-    };
+      // support token wrapped under `token` object
+      const access = response.data.token?.access || response.data.access;
+      const refresh = response.data.token?.refresh || response.data.refresh;
+      return {
+        success: true,
+        message: `✅ Login RÉUSSI pour ${username}`,
+        data: { ...response.data, access, refresh },
+      };
   } catch (error: any) {
     return {
       success: false,
@@ -167,6 +166,19 @@ async function runTests() {
   } else if (test3.data) {
     console.log(`   User:`, test3.data.user);
     console.log(`   Access Token: ${test3.data.access_token}`);
+      // verify admin token works against protected endpoint
+      if (test3.data.access) {
+        try {
+          const adminClient = axios.create({
+            baseURL: API_BASE_URL,
+            headers: { Authorization: `Bearer ${test3.data.access}` },
+          });
+          const res = await adminClient.get('/users/all/?limit=1');
+          console.log('   🔑 admin token valide, /users/all/ status', res.status);
+        } catch (e: any) {
+          console.error('   ❌ échec test admin endpoint', e.message);
+        }
+      }
   }
 
   const test4 = await testPublicEndpoints();

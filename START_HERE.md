@@ -112,6 +112,12 @@ QUICK_COMMANDS.md           ← Commands rapides
 ✅ Tests:          E2E Cypress inclus
 ✅ Documentation:  Exhaustive
 ⚠️  Backend API:    Fermée (401) - en attente de config
+
+ℹ️ **Nouveauté (Mars 2026)**: L'API de login renvoie désormais un objet
+`token` (`access` + `refresh`). Un super‑admin (`admin`/`Admin@2025`) peut
+se connecter, récupérer ce jeton et l'utiliser pour accéder à toutes les
+routes `/admin/*` via l'interface. L'intercepteur Axios ajoute automatiquement
+le header `Authorization: Bearer <access>` à chaque requête.
 ```
 
 **Le projet est prêt pour production (une fois l'API configurée).**
