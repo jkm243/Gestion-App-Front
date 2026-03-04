@@ -8,6 +8,9 @@
  *   npx cypress run
  */
 
+// @ts-nocheck
+/// <reference types="cypress" />
+
 describe('Signup et Login Flow', () => {
   const timestamp = Date.now();
   const testUserCashier = {

@@ -1,22 +1,22 @@
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm, Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { userService } from '../../services/api/users';
-import { User } from '../../types';
+import { userService } from '../../services/api';
+import { User, UpdateUserRequest } from '../../types';
 import { AlertCircle, Save, X } from 'lucide-react';
 import { useState } from 'react';
 
 const userSchema = z.object({
   username: z.string().min(1, 'Nom d\'utilisateur requis'),
   email: z.string().email('Email invalide'),
-  fullname: z.string().min(1, 'Nom complet requis'),
+  fullname: z.string().optional(),
   is_active: z.boolean().default(true),
 });
 
 type UserFormData = z.infer<typeof userSchema>;
 
 interface UserFormProps {
-  user?: User;
+  user: User;
   onSave?: (user: User) => void;
   onCancel?: () => void;
 }
@@ -30,23 +30,29 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
     handleSubmit,
     formState: { errors },
   } = useForm<UserFormData>({
-    resolver: zodResolver(userSchema),
-    defaultValues: user,
+    resolver: zodResolver(userSchema) as Resolver<UserFormData>,
+    defaultValues: {
+      username: user.username,
+      email: user.email,
+      fullname: user.fullname,
+      is_active: user.is_active,
+    },
   });
 
-  const onSubmit: SubmitHandler<UserFormData> = async (data) => {
+  const onSubmit = async (data: UserFormData) => {
     setIsLoading(true);
     setError(null);
     try {
-      if (user) {
-        const updated = await userService.updateUser(user.id, data);
-        onSave?.(updated);
-      } else {
-        const created = await userService.createUser(data);
-        onSave?.(created);
-      }
-    } catch (err: any) {
-      setError(err.message || 'Une erreur est survenue');
+      const updateData: UpdateUserRequest = {
+        username: data.username,
+        email: data.email,
+        fullname: data.fullname,
+        is_active: data.is_active,
+      };
+      const updated = await userService.updateUser(user.id, updateData);
+      onSave?.(updated);
+    } catch (err) {
+      setError((err as { message?: string })?.message || 'Une erreur est survenue');
     } finally {
       setIsLoading(false);
     }
@@ -55,7 +61,7 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="bg-white p-6 rounded-lg shadow space-y-4">
       <h3 className="text-lg font-semibold">
-        {user ? 'Modifier l\'utilisateur' : 'Ajouter un utilisateur'}
+        Modifier l\'utilisateur
       </h3>
 
       {error && (

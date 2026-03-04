@@ -11,7 +11,7 @@ const productSchema = z.object({
   description: z.string(),
   price: z.number().min(0),
   quantity_in_stock: z.number().min(0),
-  category: z.string(),
+  category: z.string().nullable().optional(),
   barcode: z.string(),
 });
 
@@ -33,18 +33,28 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
     formState: { errors },
   } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
-    defaultValues: product,
+    defaultValues: product
+      ? {
+          ...product,
+          category: product.category ?? null,
+        }
+      : undefined,
   });
 
   const onSubmit: SubmitHandler<ProductFormData> = async (data) => {
     setIsLoading(true);
     setError(null);
     try {
+      const payload = {
+        ...data,
+        category: data.category ?? null,
+      };
+
       if (product) {
-        const updated = await productService.updateProduct(product.id, data);
+        const updated = await productService.updateProduct(product.id, payload);
         onSave?.(updated);
       } else {
-        const created = await productService.createProduct(data as any);
+        const created = await productService.createProduct(payload);
         onSave?.(created);
       }
     } catch (err: any) {

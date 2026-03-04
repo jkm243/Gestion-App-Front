@@ -1,28 +1,17 @@
 import { apiClient } from './client';
-import { Sale, Invoice, PaginatedResponse } from '../../types';
+import { Sale, CreateSaleRequest, AddSaleItemRequest, PaginatedResponse } from '../../types';
 
+/**
+ * Sale API Service
+ * Maps to /api/sales/ endpoints per OpenAPI spec
+ */
 export const saleService = {
-  async getAllSales(page: number = 1, limit: number = 50, filters?: any): Promise<PaginatedResponse<Sale>> {
-    try {
-      const response = await apiClient.get('/sales/', {
-        params: { page, limit, ...filters },
-      });
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  async getSaleById(id: number): Promise<Sale> {
-    try {
-      const response = await apiClient.get(`/sales/${id}/`);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  async createSale(saleData: any): Promise<Sale> {
+  /**
+   * POST /api/sales/
+   * Create new sale with items_data array
+   * Requires: { customer (uuid), tax_amount?, discount_amount?, notes?, items_data: [{ product, location?, quantity, unit_price, discount_amount? }] }
+   */
+  async createSale(saleData: CreateSaleRequest): Promise<Sale> {
     try {
       const response = await apiClient.post('/sales/', saleData);
       return response.data;
@@ -31,38 +20,19 @@ export const saleService = {
     }
   },
 
-  async updateSale(id: number, saleData: Partial<Sale>): Promise<Sale> {
+  /**
+   * GET /api/sales/list/
+   * List all sales with optional filtering by status and customer
+   */
+  async getAllSales(params?: {
+    status?: 'pending' | 'completed' | 'cancelled' | 'refunded';
+    customer?: string; // UUID
+    page?: number;
+    page_size?: number;
+  }): Promise<PaginatedResponse<Sale>> {
     try {
-      const response = await apiClient.put(`/sales/${id}/`, saleData);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  async deleteSale(id: number): Promise<void> {
-    try {
-      await apiClient.delete(`/sales/${id}/`);
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  async getSalesByUser(userId: number): Promise<Sale[]> {
-    try {
-      const response = await apiClient.get(`/sales/?user_id=${userId}`);
-      return response.data.results || response.data;
-    } catch (error) {
-      throw error;
-    }
-  },
-};
-
-export const invoiceService = {
-  async getAllInvoices(page: number = 1, limit: number = 50): Promise<PaginatedResponse<Invoice>> {
-    try {
-      const response = await apiClient.get('/invoices/', {
-        params: { page, limit },
+      const response = await apiClient.get('/sales/list/', {
+        params,
       });
       return response.data;
     } catch (error) {
@@ -70,39 +40,78 @@ export const invoiceService = {
     }
   },
 
-  async getInvoiceById(id: number): Promise<Invoice> {
+  /**
+   * GET /api/sales/{sale_id}/
+   * Get specific sale by ID (UUID)
+   */
+  async getSaleById(saleId: string): Promise<Sale> {
     try {
-      const response = await apiClient.get(`/invoices/${id}/`);
+      const response = await apiClient.get(`/sales/${saleId}/`);
       return response.data;
     } catch (error) {
       throw error;
     }
   },
 
-  async createInvoice(saleId: number): Promise<Invoice> {
+  /**
+   * POST /api/sales/{sale_id}/add-item/
+   * Add item to pending sale
+   */
+  async addSaleItem(saleId: string, itemData: AddSaleItemRequest): Promise<Sale> {
     try {
-      const response = await apiClient.post('/invoices/', { sale_id: saleId });
+      const response = await apiClient.post(`/sales/${saleId}/add-item/`, itemData);
       return response.data;
     } catch (error) {
       throw error;
     }
   },
 
-  async generateInvoicePDF(invoiceId: number): Promise<Blob> {
+  /**
+   * POST /api/sales/{sale_id}/complete/
+   * Mark sale as completed
+   */
+  async completeSale(saleId: string): Promise<Sale> {
     try {
-      const response = await apiClient.get(`/invoices/${invoiceId}/pdf/`, {
-        responseType: 'blob',
-      });
+      const response = await apiClient.post(`/sales/${saleId}/complete/`);
       return response.data;
     } catch (error) {
       throw error;
     }
   },
 
-  async updateInvoiceStatus(id: number, status: string): Promise<Invoice> {
+  /**
+   * POST /api/sales/{sale_id}/cancel/
+   * Cancel sale (only if pending)
+   */
+  async cancelSale(saleId: string): Promise<Sale> {
     try {
-      const response = await apiClient.patch(`/invoices/${id}/`, { status });
+      const response = await apiClient.post(`/sales/${saleId}/cancel/`);
       return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
+   * POST /api/sales/{sale_id}/refund/
+   * Refund completed sale
+   */
+  async refundSale(saleId: string): Promise<Sale> {
+    try {
+      const response = await apiClient.post(`/sales/${saleId}/refund/`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
+   * DELETE /api/sales/{sale_id}/delete/
+   * Delete pending sale
+   */
+  async deleteSale(saleId: string): Promise<void> {
+    try {
+      await apiClient.delete(`/sales/${saleId}/delete/`);
     } catch (error) {
       throw error;
     }

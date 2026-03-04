@@ -12,34 +12,36 @@ export function ProductsPage() {
   const [showForm, setShowForm] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>();
 
-  const loadProducts = () => {
+  const loadProducts = async () => {
     setLoading(true);
-    productService
-      .getAllProducts()
-      .then((res) => {
-        setProducts(res.results || []);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError('Impossible de charger les produits.');
-      })
-      .finally(() => setLoading(false));
+    try {
+      const res = await productService.getAllProducts();
+      // getAllProducts now returns Product[] directly (per updated service)
+      setProducts(res);
+      setError(null);
+    } catch (err) {
+      console.error(err);
+      setError('Impossible de charger les produits.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     loadProducts();
   }, []);
 
-  const handleEdit = (product: Product) => {
-    setSelectedProduct(product);
+  const handleEdit = (_product: Product) => {
+    setSelectedProduct(_product);
     setShowForm(true);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm('Êtes-vous sûr ?')) {
       try {
         await productService.deleteProduct(id);
         setProducts(products.filter((p) => p.id !== id));
+        setError(null);
       } catch (err) {
         console.error(err);
         setError('Erreur lors de la suppression');
@@ -47,7 +49,7 @@ export function ProductsPage() {
     }
   };
 
-  const handleSave = (product: Product) => {
+  const handleSave = () => {
     loadProducts();
     setShowForm(false);
     setSelectedProduct(undefined);
@@ -87,13 +89,20 @@ export function ProductsPage() {
         columns={[
           { key: 'name', label: 'Nom', sortable: true },
           { key: 'category', label: 'Catégorie', sortable: true },
-          { key: 'price', label: 'Prix', sortable: true, render: (p) => `${p.price.toFixed(2)} €` },
-          { key: 'quantity_in_stock', label: 'Stock', sortable: true },
+          {
+            key: 'unit_price',
+            label: 'Prix',
+            sortable: true,
+            render: (p) => {
+              const price = parseFloat(p.unit_price || '0');
+              return `${price.toFixed(2)} €`;
+            },
+          },
           { key: 'is_active', label: 'Actif', render: (p) => (p.is_active ? '✓' : '✗') },
         ]}
         searchFields={['name', 'category']}
         onEdit={handleEdit}
-        onDelete={handleDelete}
+        onDelete={(product) => handleDelete(product.id)}
       />
     </div>
   );

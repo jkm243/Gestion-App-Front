@@ -9,22 +9,22 @@ interface Column<T> {
   width?: string;
 }
 
-interface DataTableProps<T extends { id?: number }> {
+interface DataTableProps<T extends { id?: number | string }> {
   columns: Column<T>[];
   data: T[];
   onEdit?: (row: T) => void;
   onDelete?: (row: T) => void;
   isLoading?: boolean;
-  searchableFields?: (keyof T)[];
+  searchFields?: (keyof T)[];
 }
 
-export function DataTable<T extends { id?: number }>({
+export function DataTable<T extends { id?: number | string }>({
   columns,
   data,
   onEdit,
   onDelete,
   isLoading,
-  searchableFields = [],
+  searchFields = [],
 }: DataTableProps<T>) {
   const [sortKey, setSortKey] = useState<keyof T | null>(null);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
@@ -34,9 +34,9 @@ export function DataTable<T extends { id?: number }>({
     let filtered = data;
 
     // Apply search filter
-    if (searchTerm && searchableFields.length > 0) {
+    if (searchTerm && searchFields.length > 0) {
       filtered = data.filter((row) =>
-        searchableFields.some((field) => {
+        searchFields.some((field) => {
           const value = row[field];
           return String(value).toLowerCase().includes(searchTerm.toLowerCase());
         })
@@ -67,7 +67,7 @@ export function DataTable<T extends { id?: number }>({
     }
 
     return filtered;
-  }, [data, sortKey, sortOrder, searchTerm, searchableFields]);
+  }, [data, sortKey, sortOrder, searchTerm, searchFields]);
 
   const handleSort = (key: keyof T) => {
     if (sortKey === key) {
@@ -80,7 +80,7 @@ export function DataTable<T extends { id?: number }>({
 
   return (
     <div className="space-y-4">
-      {searchableFields.length > 0 && (
+      {searchFields.length > 0 && (
         <div className="flex items-center gap-2 mb-4">
           <Search className="w-4 h-4 text-gray-400" />
           <input

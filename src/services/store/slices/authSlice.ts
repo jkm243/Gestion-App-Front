@@ -1,5 +1,5 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { AuthState, User, AuthTokens, LoginFormData } from '../../types';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { AuthState, LoginFormData } from '../../../types';
 // authService is exported from services/api/index.ts -- adjust relative path accordingly
 import { authService } from '../../api';
 
@@ -17,9 +17,9 @@ export const loginAsync = createAsyncThunk(
     try {
       const response = await authService.login(credentials);
       return response;
-    } catch (error: any) {
+    } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || 'Erreur de connexion'
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Erreur de connexion'
       );
     }
   }
@@ -31,9 +31,9 @@ export const getCurrentUserAsync = createAsyncThunk(
     try {
       const user = await authService.getCurrentUser();
       return user;
-    } catch (error: any) {
+    } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || 'Erreur lors de la récupération de l\'utilisateur'
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Erreur lors de la récupération de l\'utilisateur'
       );
     }
   }
@@ -50,7 +50,7 @@ export const initializeAuthAsync = createAsyncThunk(
       
       const user = await authService.getCurrentUser();
       return { user, tokens };
-    } catch (error: any) {
+    } catch {
       authService.logout();
       return rejectWithValue('Session expirée');
     }

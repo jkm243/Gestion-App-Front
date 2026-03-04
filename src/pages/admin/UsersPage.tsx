@@ -12,34 +12,36 @@ export function UsersPage() {
   const [showForm, setShowForm] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | undefined>();
 
-  const loadUsers = () => {
+  const loadUsers = async () => {
     setLoading(true);
-    userService
-      .getAllUsers()
-      .then((res) => {
-        setUsers(res.results || []);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError('Impossible de charger la liste.');
-      })
-      .finally(() => setLoading(false));
+    try {
+      const res = await userService.getAllUsers();
+      // getAllUsers now returns User[] directly (per updated service)
+      setUsers(res);
+      setError(null);
+    } catch (err) {
+      console.error(err);
+      setError('Impossible de charger la liste.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     loadUsers();
   }, []);
 
-  const handleEdit = (user: User) => {
-    setSelectedUser(user);
+  const handleEdit = (_user: User) => {
+    setSelectedUser(_user);
     setShowForm(true);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm('Êtes-vous sûr ?')) {
       try {
         await userService.deleteUser(id);
         setUsers(users.filter((u) => u.id !== id));
+        setError(null);
       } catch (err) {
         console.error(err);
         setError('Erreur lors de la suppression');
@@ -47,7 +49,7 @@ export function UsersPage() {
     }
   };
 
-  const handleSave = (user: User) => {
+  const handleSave = () => {
     loadUsers();
     setShowForm(false);
     setSelectedUser(undefined);
@@ -57,7 +59,7 @@ export function UsersPage() {
     return (
       <div className="p-6">
         <UserForm
-          user={selectedUser}
+          user={selectedUser!}
           onSave={handleSave}
           onCancel={() => {
             setShowForm(false);
@@ -92,7 +94,7 @@ export function UsersPage() {
         ]}
         searchFields={['username', 'email']}
         onEdit={handleEdit}
-        onDelete={handleDelete}
+        onDelete={(user) => handleDelete(user.id)}
       />
     </div>
   );

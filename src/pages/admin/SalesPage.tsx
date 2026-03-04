@@ -1,19 +1,19 @@
 import { useEffect, useState } from 'react';
-import { saleService } from '../../services/api/sales';
+import { saleService } from '../../services/api';
 import { Sale } from '../../types';
 import { DataTable } from '../../components/tables/DataTable';
 
 export function SalesPage() {
-  const [sales, setSales] = useState<Sale[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [sales, setSales] = useState<Sale[]>([]);
 
   useEffect(() => {
     setLoading(true);
     saleService
-      .getAllSales(currentPage, 100)
+      .getAllSales({ page: currentPage, page_size: 100 })
       .then((res) => {
         setSales(res.results || []);
         setTotalPages(Math.ceil((res.count || 0) / 100));
@@ -35,16 +35,19 @@ export function SalesPage() {
         columns={[
           { key: 'sale_number', label: 'N° de vente', sortable: true },
           {
-            key: 'sale_date',
+            key: 'created_at',
             label: 'Date',
             sortable: true,
-            render: (s) => new Date(s.sale_date).toLocaleString('fr-FR'),
+            render: (s) => new Date(s.created_at).toLocaleString('fr-FR'),
           },
           {
             key: 'total_amount',
             label: 'Montant',
             sortable: true,
-            render: (s) => `${s.total_amount.toFixed(2)} €`,
+            render: (s) => {
+              const amount = parseFloat(s.total_amount || '0');
+              return `${amount.toFixed(2)} €`;
+            },
           },
           {
             key: 'status',
@@ -52,20 +55,21 @@ export function SalesPage() {
             render: (s) => (
               <span
                 className={`px-2 py-1 rounded text-xs font-medium ${
-                  s.status === 'COMPLETED'
+                  s.status === 'completed'
                     ? 'bg-green-100 text-green-800'
-                    : s.status === 'PENDING'
+                    : s.status === 'pending'
                     ? 'bg-yellow-100 text-yellow-800'
-                    : 'bg-red-100 text-red-800'
+                    : s.status === 'cancelled'
+                    ? 'bg-red-100 text-red-800'
+                    : 'bg-blue-100 text-blue-800'
                 }`}
               >
                 {s.status}
               </span>
             ),
           },
-          { key: 'payment_method', label: 'Méthode', sortable: true },
         ]}
-        searchFields={['sale_number', 'payment_method']}
+        searchFields={['sale_number']}
       />
 
       {/* Pagination */}

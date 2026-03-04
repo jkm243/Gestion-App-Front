@@ -1,16 +1,16 @@
-import { useEffect, useState } from 'react';
-import { TrendingUp, Package, Users, DollarSign } from 'lucide-react';
+import { useState } from 'react';
+import { TrendingUp, Package, Users, DollarSign, type LucideIcon } from 'lucide-react';
 
 interface KPICard {
   title: string;
   value: string;
   change: number;
-  icon: any;
+  icon: LucideIcon;
   color: string;
 }
 
 export function AdminDashboard() {
-  const [kpis, setKpis] = useState<KPICard[]>([
+  const [_kpis] = useState<KPICard[]>([
     {
       title: 'Chiffre d\'affaires',
       value: '$45,231.89',
@@ -51,7 +51,7 @@ export function AdminDashboard() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {kpis.map((kpi, idx) => {
+        {_kpis.map((kpi, idx) => {
           const Icon = kpi.icon;
           return (
             <div key={idx} className="bg-white rounded-lg shadow p-6">

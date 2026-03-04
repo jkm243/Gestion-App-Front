@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import { addToCart } from '../../services/store/slices/cartSlice';
-import { productService } from '../../services/api/products';
-import { Product } from '../../types';
+import { productService } from '../../services/api';
+import { Product, CartItem } from '../../types';
 import { Search, ShoppingCart } from 'lucide-react';
 
 export function QuickSalePage() {
@@ -16,7 +16,7 @@ export function QuickSalePage() {
     if (!query.trim()) return;
     setLoading(true);
     try {
-      const list = await productService.searchProducts(query);
+      const list = await productService.getAllProducts(query);
       setResults((list as Product[]) || []);
     } catch (err) {
       console.error(err);
@@ -59,11 +59,10 @@ export function QuickSalePage() {
               <div key={p.id} className="border rounded p-3 hover:shadow-md transition">
                 <h3 className="font-medium truncate">{p.name}</h3>
                 <p className="text-sm text-gray-500">{p.category}</p>
-                <p className="text-lg font-semibold text-blue-600 my-1">{p.price.toFixed(2)} €</p>
-                <p className="text-xs text-gray-500 mb-2">Stock: {p.quantity_in_stock}</p>
+                <p className="text-lg font-semibold text-blue-600 my-1">{parseFloat(p.unit_price || '0').toFixed(2)} €</p>
+                <p className="text-xs text-gray-500 mb-2">Stock: --</p>
                 <button
                   onClick={() => handleAddToCart(p)}
-                  disabled={p.quantity_in_stock === 0}
                   className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
                 >
                   <ShoppingCart className="w-4 h-4" />
@@ -85,11 +84,11 @@ export function QuickSalePage() {
               {cart.items.length === 0 ? (
                 <p className="text-gray-500 text-sm">Panier vide</p>
               ) : (
-                cart.items.map((item) => (
+                cart.items.map((item: CartItem) => (
                   <div key={item.product.id} className="text-sm border-b pb-2">
                     <p className="font-medium truncate">{item.product.name}</p>
                     <p className="text-gray-600">
-                      {item.quantity} x {item.product.price.toFixed(2)} €
+                      {item.quantity} x {parseFloat(item.product.unit_price || '0').toFixed(2)} €
                     </p>
                   </div>
                 ))

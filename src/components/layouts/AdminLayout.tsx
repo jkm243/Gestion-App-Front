@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
-import { Menu, X, LogOut, User, Settings, Bell, Search } from 'lucide-react';
+import { Menu, X, LogOut, Settings, Bell, Search } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '../../services/hooks';
 import { logout } from '../../services/store/slices/authSlice';
 
@@ -19,6 +19,10 @@ export function AdminLayout() {
     { label: 'Tableau de Bord', icon: '📊', href: '/admin/dashboard' },
     { label: 'Utilisateurs', icon: '👥', href: '/admin/users' },
     { label: 'Produits', icon: '📦', href: '/admin/products' },
+    { label: 'Fournisseurs', icon: '🏭', href: '/admin/suppliers' },
+    { label: 'Clients', icon: '👨‍💼', href: '/admin/customers' },
+    { label: 'Emplacements', icon: '🏪', href: '/admin/locations' },
+    { label: 'Stocks', icon: '📊', href: '/admin/stocks' },
     { label: 'Ventes', icon: '💰', href: '/admin/sales' },
     { label: 'Factures', icon: '🧾', href: '/admin/invoices' },
     { label: 'Analytiques', icon: '📈', href: '/admin/analytics' },

@@ -3,69 +3,31 @@ import { User, AuthTokens, LoginFormData } from '../../types';
 
 export const authService = {
   async login(credentials: LoginFormData): Promise<AuthTokens & { user: User }> {
-    // support a local/dev login bypass for frontend testing
-    if (import.meta.env.VITE_DEV_LOGIN === 'true') {
-      // any credentials will work; return a fake admin user
-      // allow selecting a role based on username keyword
-      const isCashier = /cashier/i.test(credentials.username);
-      const roleObj = isCashier
-        ? { id: 2, name: 'CASHIER' as const, description: 'Cashier (dev mode)' }
-        : { id: 1, name: 'ADMIN' as const, description: 'Administrator (dev mode)' };
-      const fakeUser: User = {
-        id: isCashier ? 2 : 1,
-        username: credentials.username,
-        email: `${credentials.username}@example.com`,
-        fullname: 'Dev User',
-        role: roleObj,
-        is_active: true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-      const fakeTokens: AuthTokens = {
-        access_token: 'dev-access-token',
-        refresh_token: 'dev-refresh-token',
-      };
-      localStorage.setItem('access_token', fakeTokens.access_token);
-      localStorage.setItem('refresh_token', fakeTokens.refresh_token);
-      return { ...fakeTokens, user: fakeUser };
+    const response = await apiClient.post('/users/login/', credentials);
+    const data = response.data;
+
+    // the backend nests tokens inside `token` object per OpenAPI spec
+    const accessToken = data.token?.access || '';
+    const refreshToken = data.token?.refresh || '';
+
+    // persist tokens so the request interceptor can attach them
+    if (accessToken) {
+      localStorage.setItem('access_token', accessToken);
+    }
+    if (refreshToken) {
+      localStorage.setItem('refresh_token', refreshToken);
     }
 
-    try {
-      const response = await apiClient.post('/users/login/', credentials);
-      const data = response.data;
-
-      // the backend now nests tokens inside `token` object; support both
-      // legacy and new formats for backwards compatibility
-      const accessToken =
-        data.token?.access || data.access || data.access_token || '';
-      const refreshToken =
-        data.token?.refresh || data.refresh || data.refresh_token || '';
-
-      // persist tokens so the request interceptor can attach them
-      if (accessToken) {
-        localStorage.setItem('access_token', accessToken);
-      }
-      if (refreshToken) {
-        localStorage.setItem('refresh_token', refreshToken);
-      }
-
-      return {
-        access_token: accessToken,
-        refresh_token: refreshToken,
-        user: data.user,
-      };
-    } catch (error) {
-      throw error;
-    }
+    return {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      user: data.user,
+    };
   },
 
   async getCurrentUser(): Promise<User> {
-    try {
-      const response = await apiClient.get('/users/me/');
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.get('/users/me/');
+    return response.data;
   },
 
   logout(): void {
@@ -74,14 +36,10 @@ export const authService = {
   },
 
   async changePassword(oldPassword: string, newPassword: string): Promise<void> {
-    try {
-      await apiClient.post('/users/change-password/', {
-        old_password: oldPassword,
-        new_password: newPassword,
-      });
-    } catch (error) {
-      throw error;
-    }
+    await apiClient.post('/users/change-password/', {
+      old_password: oldPassword,
+      new_password: newPassword,
+    });
   },
 
   getStoredTokens(): AuthTokens | null {
@@ -99,6 +57,6 @@ export const authService = {
   },
 
   isAuthenticated(): boolean {
-    return !!localStorage.getItem('access_token');
+    return this.getStoredTokens() !== null;
   },
 };

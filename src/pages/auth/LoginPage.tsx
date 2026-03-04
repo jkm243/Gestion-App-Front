@@ -34,10 +34,11 @@ export function LoginPage() {
     try {
       const result = await dispatch(loginAsync(data)).unwrap();
       
-      // Redirect based on role
-      if (result.user.role.name === 'ADMIN') {
+      // Redirect based on role (case‑insensitive)
+      const roleName = result.user.role.name.toUpperCase();
+      if (roleName === 'ADMIN') {
         navigate('/admin/dashboard');
-      } else if (result.user.role.name === 'CASHIER') {
+      } else if (roleName === 'CASHIER') {
         navigate('/cashier');
       }
     } catch (err: any) {

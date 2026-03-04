@@ -1,11 +1,28 @@
 import { useRef } from 'react';
 import html2pdf from 'html2pdf.js';
-import { Invoice } from '../../types';
+import { Invoice, SaleItem } from '../../types';
+
+// minimal options type matching html2pdf.js declaration
+interface Html2PdfOptions {
+  margin?: number | [number, number] | [number, number, number, number];
+  filename?: string;
+  image?: {
+    type?: 'jpeg' | 'png' | 'webp';
+    quality?: number;
+  };
+  html2canvas?: object;
+  jsPDF?: {
+    unit?: string;
+    format?: string | [number, number];
+    orientation?: 'portrait' | 'landscape';
+  };
+}
+
 import { Printer, Download } from 'lucide-react';
 
 interface InvoicePrinterProps {
   invoice: Invoice;
-  saleData?: any;
+  saleData?: { items?: SaleItem[] };
 }
 
 export function InvoicePrinter({ invoice, saleData }: InvoicePrinterProps) {
@@ -16,11 +33,10 @@ export function InvoicePrinter({ invoice, saleData }: InvoicePrinterProps) {
       window.print();
     }
   };
-
   const handleDownloadPDF = () => {
     if (printRef.current) {
       const element = printRef.current;
-      const opt = {
+      const opt: Html2PdfOptions = {
         margin: 10,
         filename: `facture-${invoice.invoice_number}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
@@ -72,7 +88,7 @@ export function InvoicePrinter({ invoice, saleData }: InvoicePrinterProps) {
           <div className="text-right">
             <p className="font-semibold">Facture #{invoice.invoice_number}</p>
             <p className="text-sm text-gray-600">
-              Émise le {new Date(invoice.issue_date).toLocaleDateString('fr-FR')}
+              Émise le {invoice.issue_date ? new Date(invoice.issue_date).toLocaleDateString('fr-FR') : ''}
             </p>
             {invoice.due_date && (
               <p className="text-sm text-gray-600">
@@ -95,13 +111,13 @@ export function InvoicePrinter({ invoice, saleData }: InvoicePrinterProps) {
                 </tr>
               </thead>
               <tbody>
-                {saleData.items?.map((item: any, idx: number) => (
+                {saleData.items?.map((item, idx) => (
                   <tr key={idx} className="border-b">
-                    <td className="p-2">{item.product?.name || `Article ${idx + 1}`}</td>
+                    <td className="p-2">{item.product_detail?.name || `Article ${idx + 1}`}</td>
                     <td className="p-2 text-right">{item.quantity}</td>
-                    <td className="p-2 text-right">{item.unit_price?.toFixed(2) || '0.00'} €</td>
+                    <td className="p-2 text-right">{item.unit_price ? parseFloat(item.unit_price).toFixed(2) : '0.00'} €</td>
                     <td className="p-2 text-right font-semibold">
-                      {((item.quantity || 0) * (item.unit_price || 0)).toFixed(2)} €
+                      {((item.quantity || 0) * (item.unit_price ? parseFloat(item.unit_price) : 0)).toFixed(2)} €
                     </td>
                   </tr>
                 ))}
@@ -115,7 +131,7 @@ export function InvoicePrinter({ invoice, saleData }: InvoicePrinterProps) {
           <div className="w-64">
             <div className="flex justify-between py-2 border-t-2 border-b-2 font-semibold">
               <span>Total TTC:</span>
-              <span className="text-xl">{invoice.amount.toFixed(2)} €</span>
+              <span className="text-xl">{invoice.amount?.toFixed(2) ?? '0.00'} €</span>
             </div>
           </div>
         </div>

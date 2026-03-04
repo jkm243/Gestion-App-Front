@@ -34,7 +34,7 @@ export function ProtectedRoute() {
 export function AdminRoute() {
   const { user } = useAppSelector((state) => state.auth);
 
-  if (user?.role.name !== 'ADMIN') {
+  if (user?.role.name.toUpperCase() !== 'ADMIN') {
     return <Navigate to="/unauthorized" replace />;
   }
 
@@ -44,7 +44,7 @@ export function AdminRoute() {
 export function CashierRoute() {
   const { user } = useAppSelector((state) => state.auth);
 
-  if (user?.role.name !== 'CASHIER') {
+  if (user?.role.name.toUpperCase() !== 'CASHIER') {
     return <Navigate to="/unauthorized" replace />;
   }
 
@@ -55,9 +55,10 @@ export function PublicRoute() {
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
 
   if (isAuthenticated) {
-    if (user?.role.name === 'ADMIN') {
+    const role = user?.role.name.toUpperCase();
+    if (role === 'ADMIN') {
       return <Navigate to="/admin/dashboard" replace />;
-    } else if (user?.role.name === 'CASHIER') {
+    } else if (role === 'CASHIER') {
       return <Navigate to="/cashier" replace />;
     }
   }

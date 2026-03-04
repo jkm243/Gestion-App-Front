@@ -4,6 +4,10 @@ import { SignupPage } from '../pages/auth/SignupPage';
 import { AdminDashboard } from '../pages/admin/Dashboard';
 import { UsersPage } from '../pages/admin/UsersPage';
 import { ProductsPage } from '../pages/admin/ProductsPage';
+import { SuppliersPage } from '../pages/admin/SuppliersPage';
+import { CustomersPage } from '../pages/admin/CustomersPage';
+import { LocationsPage } from '../pages/admin/LocationsPage';
+import { StocksPage } from '../pages/admin/StocksPage';
 import { SalesPage } from '../pages/admin/SalesPage';
 import { AnalyticsPage } from '../pages/admin/AnalyticsPage';
 import { SettingsPage } from '../pages/admin/SettingsPage';
@@ -43,13 +47,16 @@ export function AppRouter() {
           <Route element={<AdminRoute />}>
             <Route element={<AdminLayout />}>
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                <Route path="/admin/users" element={<UsersPage />} />
-                <Route path="/admin/products" element={<ProductsPage />} />
-                <Route path="/admin/sales" element={<SalesPage />} />
-                <Route path="/admin/analytics" element={<AnalyticsPage />} />
-                <Route path="/admin/invoices" element={<InvoicesPage />} />
-                <Route path="/admin/settings" element={<SettingsPage />} />
-              {/* Additional admin routes will go here */}
+              <Route path="/admin/users" element={<UsersPage />} />
+              <Route path="/admin/products" element={<ProductsPage />} />
+              <Route path="/admin/suppliers" element={<SuppliersPage />} />
+              <Route path="/admin/customers" element={<CustomersPage />} />
+              <Route path="/admin/locations" element={<LocationsPage />} />
+              <Route path="/admin/stocks" element={<StocksPage />} />
+              <Route path="/admin/sales" element={<SalesPage />} />
+              <Route path="/admin/analytics" element={<AnalyticsPage />} />
+              <Route path="/admin/invoices" element={<InvoicesPage />} />
+              <Route path="/admin/settings" element={<SettingsPage />} />
             </Route>
           </Route>
 
@@ -62,7 +69,6 @@ export function AppRouter() {
               <Route path="/cashier/payment" element={<PaymentPage />} />
               <Route path="/cashier/history" element={<HistoryPage />} />
               <Route path="/cashier/stock" element={<StockPage />} />
-              {/* Additional cashier routes will go here */}
             </Route>
           </Route>
         </Route>

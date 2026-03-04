@@ -1,7 +1,16 @@
-import axios, { AxiosInstance, AxiosError } from 'axios';
-import { AuthTokens } from '../../types';
+import axios, { AxiosInstance, AxiosError, AxiosRequestConfig } from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://gestion-app-4ls9.onrender.com/api';
+// During normal Vite build `import.meta.env` is populated. When running
+// standalone scripts (ts-node/tsx) `import.meta.env` may be undefined, so
+// fall back to process.env and finally to a hardcoded default.
+const API_BASE_URL =
+  (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE_URL) ||
+  process.env.VITE_API_BASE_URL ||
+  'https://gestion-app-4ls9.onrender.com/api';
+
+interface RequestConfigWithRetry extends AxiosRequestConfig {
+  _retry?: boolean;
+}
 
 class ApiClient {
   private client: AxiosInstance;
@@ -36,13 +45,15 @@ class ApiClient {
     this.client.interceptors.response.use(
       (response) => response,
       async (error: AxiosError) => {
-        const originalRequest = error.config as any;
+        const originalRequest = error.config as RequestConfigWithRetry;
 
         if (error.response?.status === 401 && !originalRequest._retry) {
           if (this.isRefreshing) {
             return new Promise((resolve) => {
               this.refreshSubscribers.push((token: string) => {
-                originalRequest.headers.Authorization = `Bearer ${token}`;
+                if (originalRequest.headers) {
+                  originalRequest.headers.Authorization = `Bearer ${token}`;
+                }
                 resolve(this.client(originalRequest));
               });
             });
@@ -68,7 +79,9 @@ class ApiClient {
             this.refreshSubscribers.forEach((callback) => callback(newAccessToken));
             this.refreshSubscribers = [];
 
-            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+            if (originalRequest.headers) {
+              originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+            }
             return this.client(originalRequest);
           } catch (refreshError) {
             // Clear tokens and redirect to login

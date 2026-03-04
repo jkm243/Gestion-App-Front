@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { CartItem, Product } from '../../types';
+import { CartItem, Product } from '../../../types';
 import { encryptionService } from '../../utils/encryptionService';
 
 export interface CartState {
@@ -22,26 +22,26 @@ const cartSlice = createSlice({
   reducers: {
     addToCart(state, action: PayloadAction<{ product: Product; quantity: number }>) {
       const { product, quantity } = action.payload;
-      const existing = state.items.find((i) => i.product.id === product.id);
+      const existing = state.items.find((i: CartItem) => i.product.id === product.id);
       if (existing) {
         existing.quantity += quantity;
       } else {
         state.items.push({ product, quantity });
       }
-      state.total = state.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+      state.total = state.items.reduce((sum: number, item: CartItem) => sum + parseFloat(item.product.unit_price || '0') * item.quantity, 0);
       encryptionService.setEncrypted('cart', state);
     },
-    removeFromCart(state, action: PayloadAction<number>) {
-      state.items = state.items.filter((i) => i.product.id !== action.payload);
-      state.total = state.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+    removeFromCart(state, action: PayloadAction<string>) {
+      state.items = state.items.filter((i: CartItem) => i.product.id !== action.payload);
+      state.total = state.items.reduce((sum: number, item: CartItem) => sum + parseFloat(item.product.unit_price || '0') * item.quantity, 0);
       encryptionService.setEncrypted('cart', state);
     },
-    updateQuantity(state, action: PayloadAction<{ productId: number; quantity: number }>) {
-      const item = state.items.find((i) => i.product.id === action.payload.productId);
+    updateQuantity(state, action: PayloadAction<{ productId: string; quantity: number }>) {
+      const item = state.items.find((i: CartItem) => i.product.id === action.payload.productId);
       if (item) {
         item.quantity = Math.max(1, action.payload.quantity);
       }
-      state.total = state.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+      state.total = state.items.reduce((sum: number, item: CartItem) => sum + parseFloat(item.product.unit_price || '0') * item.quantity, 0);
       encryptionService.setEncrypted('cart', state);
     },
     clearCart(state) {

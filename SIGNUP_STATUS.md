@@ -101,6 +101,12 @@ Le jeton d'accès (`access`) doit être utilisé comme valeur du header
 (`admin`/`Admin@2025`) puis en appelant `/users/all/` et en créant/supprimant
 un utilisateur de test.
 
+> ⚠️ **Note sur la casse des rôles**
+> Le champ `user.role.name` retourné par l'API peut apparaître en minuscules
+> (par exemple `"admin"`). Le frontend convertit cette valeur en majuscules
+> avant d'effectuer les redirections et les contrôles d'accès, de sorte que
+> la casse importe peu dans les données renvoyées par le serveur.
+
 ### Option C: Mode Production (Nécessite accès Admin)
 ```bash
 # Cette approche nécessite:

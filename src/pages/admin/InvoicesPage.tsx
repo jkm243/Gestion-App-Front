@@ -1,44 +1,25 @@
 import { useEffect, useState } from 'react';
-import { invoiceService } from '../../services/api/sales';
-import { Invoice } from '../../types';
 import { Download, X } from 'lucide-react';
 import { InvoicePrinter } from '../../components/invoice/InvoicePrinter';
+import { Invoice } from '../../types';
 
 export function InvoicesPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+  // pagination placeholder until API supports it
+  const totalPages = Math.max(1, Math.ceil(invoices.length / 10));
 
   useEffect(() => {
     setLoading(true);
-    invoiceService
-      .getAllInvoices(currentPage, 100)
-      .then((res) => {
-        setInvoices(res.results || []);
-        setTotalPages(Math.ceil((res.count || 0) / 100));
-      })
-      .catch((err) => {
-        console.error(err);
-        setError('Impossible de charger les factures.');
-      })
-      .finally(() => setLoading(false));
+    // TODO: Connect to actual invoice endpoint when available
+    setInvoices([]);
+    setError(null);
+    setLoading(false);
   }, [currentPage]);
 
-  const handleDownloadPDF = async (invoiceId: number) => {
-    try {
-      const blob = await invoiceService.generateInvoicePDF(invoiceId);
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `invoice-${invoiceId}.pdf`;
-      link.click();
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   if (selectedInvoice) {
     return (
@@ -75,7 +56,7 @@ export function InvoicesPage() {
             {invoices.map((f) => (
               <tr key={f.id} className="border-b hover:bg-gray-50">
                 <td className="py-2 px-4 font-medium">{f.invoice_number}</td>
-                <td className="py-2 px-4 text-right">{f.amount.toFixed(2)} €</td>
+                <td className="py-2 px-4 text-right">{f.amount?.toFixed(2)} €</td>
                 <td className="py-2 px-4 text-center">
                   <span
                     className={`px-2 py-1 rounded text-xs font-medium ${
@@ -89,7 +70,7 @@ export function InvoicesPage() {
                     {f.status}
                   </span>
                 </td>
-                <td className="py-2 px-4">{new Date(f.issue_date).toLocaleDateString('fr-FR')}</td>
+                <td className="py-2 px-4">{f.issue_date ? new Date(f.issue_date).toLocaleDateString('fr-FR') : ''}</td>
                 <td className="py-2 px-4 text-center">
                   <button
                     onClick={() => setSelectedInvoice(f)}

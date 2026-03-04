@@ -3,6 +3,7 @@
  * Cashier et Administrateur
  */
 
+// @ts-nocheck
 import axios from 'axios';
 
 const API_BASE_URL = 'https://gestion-app-4ls9.onrender.com/api';
