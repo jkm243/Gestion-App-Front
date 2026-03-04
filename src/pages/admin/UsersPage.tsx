@@ -89,8 +89,8 @@ export function UsersPage() {
         columns={[
           { key: 'username', label: 'Nom', sortable: true },
           { key: 'email', label: 'Email', sortable: true },
-          { key: 'role', label: 'Rôle', render: (u) => u.role.name },
-          { key: 'is_active', label: 'Actif', render: (u) => (u.is_active ? '✓' : '✗') },
+            { key: 'role', label: 'Rôle', render: (_v, u) => u.role.name },
+              { key: 'is_active', label: 'Actif', render: (_v, u) => (u.is_active ? '✓' : '✗') },
         ]}
         searchFields={['username', 'email']}
         onEdit={handleEdit}

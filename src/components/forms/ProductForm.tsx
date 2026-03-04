@@ -2,7 +2,7 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { productService } from '../../services/api/products';
-import { Product } from '../../types';
+import { Product, CreateProductRequest, UpdateProductRequest, CategoryEnum } from '../../types';
 import { AlertCircle, Save, X } from 'lucide-react';
 import { useState } from 'react';
 
@@ -12,6 +12,7 @@ const productSchema = z.object({
   price: z.number().min(0),
   quantity_in_stock: z.number().min(0),
   category: z.string().nullable().optional(),
+  supplier: z.string().min(1, 'Fournisseur requis'),
   barcode: z.string(),
 });
 
@@ -37,6 +38,8 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
       ? {
           ...product,
           category: product.category ?? null,
+          // supplier object may be full Supplier type; store its id string for the form
+          supplier: typeof product.supplier === 'string' ? product.supplier : product.supplier.id,
         }
       : undefined,
   });
@@ -45,9 +48,10 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
     setIsLoading(true);
     setError(null);
     try {
-      const payload = {
+      const payload: CreateProductRequest | UpdateProductRequest = {
         ...data,
-        category: data.category ?? null,
+        category: data.category ? (data.category as CategoryEnum) : null,
+        supplier: data.supplier,
       };
 
       if (product) {

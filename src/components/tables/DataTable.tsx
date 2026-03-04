@@ -1,11 +1,13 @@
 import { useState, useMemo } from 'react';
 import { ChevronUp, ChevronDown, Search } from 'lucide-react';
 
-interface Column<T> {
-  key: keyof T;
+// Column is generic over the row type T and the specific field key K.
+// The render callback receives the cell value (typed as T[K]) and the full row.
+interface Column<T, K extends keyof T = keyof T> {
+  key: K;
   label: string;
   sortable?: boolean;
-  render?: (value: any, row: T) => React.ReactNode;
+  render?: (value: T[K], row: T) => React.ReactNode;
   width?: string;
 }
 

@@ -93,12 +93,16 @@ export function ProductsPage() {
             key: 'unit_price',
             label: 'Prix',
             sortable: true,
-            render: (p) => {
+            render: (_v, p) => {
               const price = parseFloat(p.unit_price || '0');
               return `${price.toFixed(2)} €`;
             },
           },
-          { key: 'is_active', label: 'Actif', render: (p) => (p.is_active ? '✓' : '✗') },
+          {
+            key: 'is_active',
+            label: 'Actif',
+            render: (_v, p) => (p.is_active ? '✓' : '✗'),
+          },
         ]}
         searchFields={['name', 'category']}
         onEdit={handleEdit}

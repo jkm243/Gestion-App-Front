@@ -38,13 +38,13 @@ export function SalesPage() {
             key: 'created_at',
             label: 'Date',
             sortable: true,
-            render: (s) => new Date(s.created_at).toLocaleString('fr-FR'),
+            render: (_v, s) => new Date(s.created_at).toLocaleString('fr-FR'),
           },
           {
             key: 'total_amount',
             label: 'Montant',
             sortable: true,
-            render: (s) => {
+            render: (_v, s) => {
               const amount = parseFloat(s.total_amount || '0');
               return `${amount.toFixed(2)} €`;
             },
@@ -52,7 +52,7 @@ export function SalesPage() {
           {
             key: 'status',
             label: 'Statut',
-            render: (s) => (
+            render: (_v, s) => (
               <span
                 className={`px-2 py-1 rounded text-xs font-medium ${
                   s.status === 'completed'
