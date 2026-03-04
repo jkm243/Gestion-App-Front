@@ -6,17 +6,17 @@ export function CartPage() {
   const dispatch = useAppDispatch();
   const cart = useAppSelector((state) => state.cart);
 
-  const handleIncrement = (productId: number, currentQty: number) => {
+  const handleIncrement = (productId: string, currentQty: number) => {
     dispatch(updateQuantity({ productId, quantity: currentQty + 1 }));
   };
 
-  const handleDecrement = (productId: number, currentQty: number) => {
+  const handleDecrement = (productId: string, currentQty: number) => {
     if (currentQty > 1) {
       dispatch(updateQuantity({ productId, quantity: currentQty - 1 }));
     }
   };
 
-  const handleRemove = (productId: number) => {
+  const handleRemove = (productId: string) => {
     dispatch(removeFromCart(productId));
   };
 

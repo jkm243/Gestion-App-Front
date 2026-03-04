@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import { addToCart } from '../../services/store/slices/cartSlice';
-import { productService } from '../../services/api';
-import { Product, CartItem } from '../../types';
+import { productService } from '../../services/api/products';
+import { Product } from '../../types';
 import { Search, ShoppingCart } from 'lucide-react';
 
 export function QuickSalePage() {
@@ -84,7 +84,7 @@ export function QuickSalePage() {
               {cart.items.length === 0 ? (
                 <p className="text-gray-500 text-sm">Panier vide</p>
               ) : (
-                cart.items.map((item: CartItem) => (
+                cart.items.map((item: { product: Product; quantity: number }) => (
                   <div key={item.product.id} className="text-sm border-b pb-2">
                     <p className="font-medium truncate">{item.product.name}</p>
                     <p className="text-gray-600">

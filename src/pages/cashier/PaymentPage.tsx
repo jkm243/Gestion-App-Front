@@ -22,17 +22,23 @@ export function PaymentPage() {
 
     setIsProcessing(true);
     try {
+      // Create sale data matching API
       const saleData = {
-        total_amount: cart.total,
-        payment_method: paymentMethod,
-        items: cart.items.map((item) => ({
-          product_id: item.product.id,
+        customer: null, // Anonymous for now
+        items_data: cart.items.map((item) => ({
+          product: item.product.id,
           quantity: item.quantity,
-          unit_price: item.product.price,
+          unit_price: parseFloat(item.product.unit_price || '0'),
         })),
       };
 
-      await saleService.createSale(saleData);
+      const sale = await saleService.createSale(saleData);
+      console.log('Sale created:', sale);
+
+      // Complete the sale with payment method
+      await saleService.completeSale(sale.id);
+      console.log('Sale completed');
+
       setStatus('success');
       setMessage('Paiement effectué avec succès !');
       dispatch(clearCart());
@@ -40,9 +46,10 @@ export function PaymentPage() {
       setTimeout(() => {
         setStatus('idle');
       }, 3000);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      console.error('Payment error:', err);
       setStatus('error');
-      setMessage(err.message || 'Erreur lors du paiement');
+      setMessage((err as { message?: string })?.message || 'Erreur lors du paiement');
     } finally {
       setIsProcessing(false);
     }
