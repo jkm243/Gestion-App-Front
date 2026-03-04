@@ -11,12 +11,12 @@ const signupSchema = z.object({
   username: z.string().min(1, "Nom d'utilisateur requis"),
   email: z.string().email('Email invalide'),
   fullname: z.string().optional(),
-  password: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caractères'),
-  password_confirm: z.string().min(6),
-  role_id: z.string().optional(), // validation handled separately
-}).refine((data) => data.password === data.password_confirm, {
+  password1: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caractères'),
+  password2: z.string().min(6),
+  role: z.string().optional(), // UUID
+}).refine((data) => data.password1 === data.password2, {
   message: 'Les mots de passe ne correspondent pas',
-  path: ['password_confirm'],
+  path: ['password2'],
 });
 
 // require role if provided list has more than one entry; handled in form UI
@@ -29,7 +29,7 @@ export function SignupPage() {
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema as any),
-    defaultValues: { role_id: '' } as any,
+    defaultValues: { role: '' } as any,
   });
 
   useEffect(() => {
@@ -49,7 +49,7 @@ export function SignupPage() {
 
   const onSubmit = async (data: SignupFormData) => {
     setError(null);
-    if (roles.length > 0 && (!data.role_id || data.role_id === '')) {
+    if (roles.length > 0 && (!data.role || data.role === '')) {
       setError('Veuillez sélectionner un rôle');
       return;
     }
@@ -58,11 +58,11 @@ export function SignupPage() {
         username: data.username,
         email: data.email,
         fullname: data.fullname,
-        password1: data.password,
-        password2: data.password_confirm,
+        password1: data.password1,
+        password2: data.password2,
       };
-      if (data.role_id) {
-        payload.role = data.role_id;
+      if (data.role) {
+        payload.role = data.role;
       }
       await userService.createUser(payload);
       // redirect to login
@@ -100,14 +100,14 @@ export function SignupPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
-              <input type="password" {...register('password')} className="w-full px-3 py-2 border rounded" />
-              {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
+              <input type="password" {...register('password1')} className="w-full px-3 py-2 border rounded" />
+              {errors.password1 && <p className="text-sm text-red-600">{errors.password1.message}</p>}
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Confirmer le mot de passe</label>
-              <input type="password" {...register('password_confirm')} className="w-full px-3 py-2 border rounded" />
-              {errors.password_confirm && <p className="text-sm text-red-600">{errors.password_confirm.message}</p>}
+              <input type="password" {...register('password2')} className="w-full px-3 py-2 border rounded" />
+              {errors.password2 && <p className="text-sm text-red-600">{errors.password2.message}</p>}
             </div>
 
             <div>
@@ -115,7 +115,7 @@ export function SignupPage() {
                 Rôle
                 {loadingRoles && <span className="text-gray-500 text-xs ml-2">(Chargement...)</span>}
               </label>
-              <select {...register('role_id' as any)} className="w-full px-3 py-2 border rounded" disabled={loadingRoles}>
+              <select {...register('role' as any)} className="w-full px-3 py-2 border rounded" disabled={loadingRoles}>
                 <option value="">Sélectionnez un rôle</option>
                 {roles.map((r) => (
                   <option key={r.id} value={r.id}>{r.name}</option>

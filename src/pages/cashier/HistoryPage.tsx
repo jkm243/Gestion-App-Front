@@ -29,7 +29,7 @@ export function HistoryPage() {
 
   const columns = [
     { key: 'id', header: 'ID', render: (sale: Sale) => sale.id.slice(0, 8) + '...' },
-    { key: 'sale_date', header: 'Date', render: (sale: Sale) => new Date(sale.sale_date).toLocaleDateString('fr-FR') },
+    { key: 'created_at', header: 'Date', render: (sale: Sale) => new Date(sale.created_at).toLocaleDateString('fr-FR') },
     { key: 'total_amount', header: 'Total', render: (sale: Sale) => `${sale.total_amount} €` },
     { key: 'status', header: 'Statut', render: (sale: Sale) => sale.status },
   ];

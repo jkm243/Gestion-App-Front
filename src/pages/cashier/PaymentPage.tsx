@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import { clearCart } from '../../services/store/slices/cartSlice';
 import { saleService } from '../../services/api/sales';
+import { CartItem, CreateSaleRequest } from '../../types';
 import { AlertCircle, CheckCircle, CreditCard, Banknote } from 'lucide-react';
 
 export function PaymentPage() {
@@ -23,12 +24,12 @@ export function PaymentPage() {
     setIsProcessing(true);
     try {
       // Create sale data matching API
-      const saleData = {
-        customer: null, // Anonymous for now
-        items_data: cart.items.map((item) => ({
+      const saleData: CreateSaleRequest = {
+        customer: auth.user?.id || '', // Use authenticated user ID or empty string
+        items_data: cart.items.map((item: CartItem) => ({
           product: item.product.id,
           quantity: item.quantity,
-          unit_price: parseFloat(item.product.unit_price || '0'),
+          unit_price: item.product.unit_price || '0',
         })),
       };
 
@@ -94,11 +95,11 @@ export function PaymentPage() {
             ) : (
               <>
                 <div className="space-y-3 mb-4">
-                  {cart.items.map((item) => (
+                  {cart.items.map((item: CartItem) => (
                     <div key={item.product.id} className="flex justify-between text-sm">
                       <span>{item.product.name} x{item.quantity}</span>
                       <span className="font-medium">
-                        {(item.product.price * item.quantity).toFixed(2)} €
+                        {(parseFloat(item.product.unit_price || '0') * item.quantity).toFixed(2)} €
                       </span>
                     </div>
                   ))}

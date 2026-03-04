@@ -1,5 +1,6 @@
 import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import { removeFromCart, updateQuantity, clearCart } from '../../services/store/slices/cartSlice';
+import { CartItem } from '../../types';
 import { Trash2, Plus, Minus } from 'lucide-react';
 
 export function CartPage() {
@@ -56,7 +57,7 @@ export function CartPage() {
                 </tr>
               </thead>
               <tbody>
-                {cart.items.map((item) => (
+                {cart.items.map((item: CartItem) => (
                   <tr key={item.product.id} className="border-b hover:bg-gray-50">
                     <td className="py-3 px-4">
                       <div>
@@ -64,7 +65,7 @@ export function CartPage() {
                         <p className="text-sm text-gray-500">{item.product.category}</p>
                       </div>
                     </td>
-                    <td className="py-3 px-4 text-right">{item.product.price.toFixed(2)} €</td>
+                    <td className="py-3 px-4 text-right">{parseFloat(item.product.unit_price || '0').toFixed(2)} €</td>
                     <td className="py-3 px-4">
                       <div className="flex items-center justify-center gap-2">
                         <button
@@ -88,7 +89,7 @@ export function CartPage() {
                       </div>
                     </td>
                     <td className="py-3 px-4 text-right font-medium">
-                      {(item.product.price * item.quantity).toFixed(2)} €
+                      {(parseFloat(item.product.unit_price || '0') * item.quantity).toFixed(2)} €
                     </td>
                     <td className="py-3 px-4 text-center">
                       <button
@@ -110,7 +111,7 @@ export function CartPage() {
               <div className="space-y-2 mb-4 pb-4 border-b">
                 <div className="flex justify-between text-sm">
                   <span>Articles:</span>
-                  <span>{cart.items.reduce((sum, item) => sum + item.quantity, 0)}</span>
+                  <span>{cart.items.reduce((sum: number, item: CartItem) => sum + item.quantity, 0)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Sous-total:</span>
