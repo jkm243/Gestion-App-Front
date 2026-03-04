@@ -1,11 +1,18 @@
 import { ShoppingCart, Barcode, Plus } from 'lucide-react';
 import { useState } from 'react';
 
+interface CartItem {
+  id: string | number;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
 export function CashierDashboard() {
-  const [cart, setCart] = useState<any[]>([]);
+  const [cart, setCart] = useState<CartItem[]>([]);
   const [barcode, setBarcode] = useState('');
 
-  const handleAddToCart = (product: any) => {
+  const handleAddToCart = (product: CartItem) => {
     const existing = cart.find((item) => item.id === product.id);
     if (existing) {
       setCart(
@@ -74,7 +81,12 @@ export function CashierDashboard() {
                   <div className="flex items-center justify-between mt-3">
                     <p className="text-lg font-bold text-gray-900">${product.price}</p>
                     <button
-                      onClick={() => handleAddToCart(product)}
+                      onClick={() =>
+                        handleAddToCart({
+                          ...product,
+                          quantity: 1,
+                        })
+                      }
                       className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
                     >
                       <Plus className="w-5 h-5" />

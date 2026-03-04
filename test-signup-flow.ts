@@ -5,6 +5,7 @@
 
 import axios from 'axios';
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const API_BASE_URL = 'https://gestion-app-4ls9.onrender.com/api';
 
 const apiClient = axios.create({
@@ -15,8 +16,8 @@ const apiClient = axios.create({
 interface TestResult {
   success: boolean;
   message: string;
-  data?: any;
-  error?: any;
+  data?: unknown;
+  error?: unknown;
 }
 
 /**
@@ -119,13 +120,14 @@ async function testPublicEndpoints(): Promise<TestResult> {
     '/swagger/',
   ];
 
-  const results: Record<string, any> = {};
+  const results: Record<string, unknown> = {};
   for (const endpoint of endpoints) {
     try {
       const response = await apiClient.get(endpoint);
       results[endpoint] = { status: response.status, accessible: true };
-    } catch (error: any) {
-      results[endpoint] = { status: error.response?.status, accessible: false };
+    } catch (error: unknown) {
+      const err = error as any;
+      results[endpoint] = { status: err.response?.status, accessible: false };
     }
   }
 
@@ -144,8 +146,9 @@ async function runTests() {
   const test1 = await testGetRolesWithoutAuth();
   console.log(test1.message);
   if (test1.error) {
-    console.log(`   Status: ${test1.error.status}`);
-    console.log(`   Erreur: ${test1.error.message}`);
+      const err1 = test1.error as any;
+      console.log(`   Status: ${err1.status}`);
+      console.log(`   Erreur: ${err1.message}`);
   } else if (test1.data) {
     console.log(`   Rôles:`, test1.data);
   }
@@ -153,25 +156,28 @@ async function runTests() {
   const test2 = await testSignupWithoutAuth();
   console.log(test2.message);
   if (test2.error) {
-    console.log(`   Status: ${test2.error.status}`);
-    console.log(`   Erreur: ${test2.error.message}`);
+      const err2 = test2.error as any;
+      console.log(`   Status: ${err2.status}`);
+      console.log(`   Erreur: ${err2.message}`);
   }
 
   // Try to login with a known admin account (if exists)
   const test3 = await testLogin('admin', 'admin123');
   console.log(test3.message);
   if (test3.error) {
-    console.log(`   Status: ${test3.error.status}`);
-    console.log(`   Erreur: ${test3.error.message}`);
+      const err3 = test3.error as any;
+      console.log(`   Status: ${err3.status}`);
+      console.log(`   Erreur: ${err3.message}`);
   } else if (test3.data) {
-    console.log(`   User:`, test3.data.user);
-    console.log(`   Access Token: ${test3.data.access_token}`);
+      const data3 = test3.data as any;
+      console.log(`   User:`, data3.user);
+      console.log(`   Access Token: ${data3.access_token}`);
       // verify admin token works against protected endpoint
-      if (test3.data.access) {
+      if (data3.access) {
         try {
           const adminClient = axios.create({
             baseURL: API_BASE_URL,
-            headers: { Authorization: `Bearer ${test3.data.access}` },
+            headers: { Authorization: `Bearer ${data3.access}` },
           });
           const res = await adminClient.get('/users/all/?limit=1');
           console.log('   🔑 admin token valide, /users/all/ status', res.status);

@@ -12,12 +12,8 @@ export const saleService = {
    * Requires: { customer (uuid), tax_amount?, discount_amount?, notes?, items_data: [{ product, location?, quantity, unit_price, discount_amount? }] }
    */
   async createSale(saleData: CreateSaleRequest): Promise<Sale> {
-    try {
-      const response = await apiClient.post('/sales/', saleData);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.post('/sales/', saleData);
+    return response.data;
   },
 
   /**
@@ -30,14 +26,10 @@ export const saleService = {
     page?: number;
     page_size?: number;
   }): Promise<PaginatedResponse<Sale>> {
-    try {
-      const response = await apiClient.get('/sales/list/', {
-        params,
-      });
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.get('/sales/list/', {
+      params,
+    });
+    return response.data;
   },
 
   /**
@@ -45,12 +37,8 @@ export const saleService = {
    * Get specific sale by ID (UUID)
    */
   async getSaleById(saleId: string): Promise<Sale> {
-    try {
-      const response = await apiClient.get(`/sales/${saleId}/`);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.get(`/sales/${saleId}/`);
+    return response.data;
   },
 
   /**
@@ -58,12 +46,8 @@ export const saleService = {
    * Add item to pending sale
    */
   async addSaleItem(saleId: string, itemData: AddSaleItemRequest): Promise<Sale> {
-    try {
-      const response = await apiClient.post(`/sales/${saleId}/add-item/`, itemData);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.post(`/sales/${saleId}/add-item/`, itemData);
+    return response.data;
   },
 
   /**
@@ -71,12 +55,8 @@ export const saleService = {
    * Mark sale as completed
    */
   async completeSale(saleId: string): Promise<Sale> {
-    try {
-      const response = await apiClient.post(`/sales/${saleId}/complete/`);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.post(`/sales/${saleId}/complete/`);
+    return response.data;
   },
 
   /**
@@ -84,12 +64,8 @@ export const saleService = {
    * Cancel sale (only if pending)
    */
   async cancelSale(saleId: string): Promise<Sale> {
-    try {
-      const response = await apiClient.post(`/sales/${saleId}/cancel/`);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.post(`/sales/${saleId}/cancel/`);
+    return response.data;
   },
 
   /**
@@ -97,12 +73,8 @@ export const saleService = {
    * Refund completed sale
    */
   async refundSale(saleId: string): Promise<Sale> {
-    try {
-      const response = await apiClient.post(`/sales/${saleId}/refund/`);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.post(`/sales/${saleId}/refund/`);
+    return response.data;
   },
 
   /**
@@ -110,10 +82,6 @@ export const saleService = {
    * Delete pending sale
    */
   async deleteSale(saleId: string): Promise<void> {
-    try {
-      await apiClient.delete(`/sales/${saleId}/delete/`);
-    } catch (error) {
-      throw error;
-    }
+    await apiClient.delete(`/sales/${saleId}/delete/`);
   },
 };

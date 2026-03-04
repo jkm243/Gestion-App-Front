@@ -24,7 +24,7 @@ export function AnalyticsPage() {
   useEffect(() => {
     setLoading(true);
     saleService
-      .getAllSales(1, 100)
+      .getAllSales({ page: 1, page_size: 100 })
       .then((res) => {
         setSales(res.results || []);
       })

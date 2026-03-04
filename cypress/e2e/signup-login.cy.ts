@@ -8,6 +8,7 @@
  *   npx cypress run
  */
 
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 /// <reference types="cypress" />
 

@@ -174,7 +174,11 @@ export function SuppliersPage() {
           { key: 'name', label: 'Nom', sortable: true },
           { key: 'contact_email', label: 'Email', sortable: true },
           { key: 'contact_phone', label: 'Téléphone' },
-          { key: 'is_active', label: 'Actif', render: (s) => (s.is_active ? '✓' : '✗') },
+          {
+            key: 'is_active',
+            label: 'Actif',
+            render: (_v, s) => (s?.is_active ? '✓' : '✗'),
+          },
         ]}
         searchFields={['name', 'contact_email']}
         onEdit={handleEdit}

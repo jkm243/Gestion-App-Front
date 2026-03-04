@@ -11,7 +11,7 @@ export function ProtectedRoute() {
     if (!isAuthenticated && !isLoading) {
       dispatch(initializeAuthAsync());
     }
-  }, []);
+  }, [dispatch, isAuthenticated, isLoading]);
 
   if (isLoading) {
     return (

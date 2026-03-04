@@ -16,7 +16,8 @@ async function testDevMode() {
     const healthCheck = await axios.get(DEV_API_BASE);
     console.log('   ✅ Frontend répond sur http://localhost:5175');
     console.log(`   Status: ${healthCheck.status}\n`);
-  } catch (error: any) {
+  } catch {
+    // intentionally ignore the caught error; we only care that the request failed
     console.error('   ❌ Frontend non accessible sur http://localhost:5175');
     console.error('   Assurez-vous que: npm run dev est lancé\n');
     return;

@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ts-expect-error: cypress types may not be installed in this workspace
 import { defineConfig } from 'cypress';
 
 export default defineConfig({
@@ -8,8 +8,8 @@ export default defineConfig({
     viewportHeight: 720,
     defaultCommandTimeout: 10000,
     requestTimeout: 10000,
-    setupNodeEvents(on, config) {
-      // implement node event listeners here
+    setupNodeEvents() {
+      // implement node event listeners here (parameters intentionally omitted)
     },
   },
   component: {

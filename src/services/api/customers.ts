@@ -11,12 +11,8 @@ export const customerService = {
    * List all customers
    */
   async getAllCustomers(): Promise<Customer[]> {
-    try {
-      const response = await apiClient.get('/customers/all/');
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.get('/customers/all/');
+    return response.data;
   },
 
   /**
@@ -24,12 +20,8 @@ export const customerService = {
    * Get specific customer by ID (UUID)
    */
   async getCustomerById(customerId: string): Promise<Customer> {
-    try {
-      const response = await apiClient.get(`/customers/${customerId}/`);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.get(`/customers/${customerId}/`);
+    return response.data;
   },
 
   /**
@@ -38,12 +30,8 @@ export const customerService = {
    * Requires: { name?, email?, phone?, address?, is_active? }
    */
   async createCustomer(customerData: CreateCustomerRequest): Promise<Customer> {
-    try {
-      const response = await apiClient.post('/customers/create/', customerData);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.post('/customers/create/', customerData);
+    return response.data;
   },
 
   /**
@@ -51,12 +39,8 @@ export const customerService = {
    * Update customer
    */
   async updateCustomer(customerId: string, customerData: UpdateCustomerRequest): Promise<Customer> {
-    try {
-      const response = await apiClient.put(`/customers/update/${customerId}/`, customerData);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.put(`/customers/update/${customerId}/`, customerData);
+    return response.data;
   },
 
   /**
@@ -64,14 +48,10 @@ export const customerService = {
    * Toggle customer active/inactive status
    */
   async toggleCustomerStatus(customerId: string, isActive: boolean): Promise<Customer> {
-    try {
-      const response = await apiClient.patch(`/customers/activate-deactivate/${customerId}/`, null, {
-        params: { is_active: isActive },
-      });
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.patch(`/customers/activate-deactivate/${customerId}/`, null, {
+      params: { is_active: isActive },
+    });
+    return response.data;
   },
 
   /**
@@ -79,10 +59,6 @@ export const customerService = {
    * Delete customer (admin only)
    */
   async deleteCustomer(customerId: string): Promise<void> {
-    try {
-      await apiClient.delete(`/customers/delete/${customerId}/`);
-    } catch (error) {
-      throw error;
-    }
+    await apiClient.delete(`/customers/delete/${customerId}/`);
   },
 };

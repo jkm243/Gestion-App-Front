@@ -151,7 +151,11 @@ export function LocationsPage() {
         columns={[
           { key: 'name', label: 'Nom', sortable: true },
           { key: 'description', label: 'Description' },
-          { key: 'is_active', label: 'Actif', render: (l) => (l.is_active ? '✓' : '✗') },
+          {
+            key: 'is_active',
+            label: 'Actif',
+            render: (_v, l) => (l?.is_active ? '✓' : '✗'),
+          },
         ]}
         searchFields={['name', 'description']}
         onEdit={handleEdit}

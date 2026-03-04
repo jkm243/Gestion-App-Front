@@ -31,25 +31,36 @@ export function LoginPage() {
     setIsLoading(true);
     setError(null);
 
+    console.log('🔄 Starting login process for:', data.username);
+
     try {
+      console.log('📡 Dispatching loginAsync...');
       const result = await dispatch(loginAsync(data)).unwrap();
-      
-      // Redirect based on role (case‑insensitive)
+      console.log('✅ Login successful, result:', result);
+
+      // Redirect based on role (case-insensitive)
       const roleName = result.user.role.name.toUpperCase();
+      console.log('👤 User role:', roleName);
+
       if (roleName === 'ADMIN') {
+        console.log('🚀 Redirecting to /admin/dashboard');
         navigate('/admin/dashboard');
       } else if (roleName === 'CASHIER') {
+        console.log('🚀 Redirecting to /cashier');
         navigate('/cashier');
+      } else {
+        console.log('❌ Unknown role, staying on login');
+        setError('Rôle utilisateur inconnu');
       }
-    } catch (err: any) {
-      setError(err || 'Erreur de connexion');
+    } catch (err: unknown) {
+      console.error('❌ Login failed:', err);
+      setError((err as { message?: string })?.message || 'Une erreur est survenue');
     } finally {
       setIsLoading(false);
     }
-  };
-
-  // debug display for dev login
+  };  // debug display for dev login
   console.log('env VITE_DEV_LOGIN=', import.meta.env.VITE_DEV_LOGIN);
+  console.log('API_BASE_URL=', import.meta.env.VITE_API_BASE_URL || 'https://gestion-app-4ls9.onrender.com/api');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 flex items-center justify-center px-4">

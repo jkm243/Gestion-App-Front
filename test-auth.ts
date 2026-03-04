@@ -3,7 +3,7 @@
  * Cashier et Administrateur
  */
 
-// @ts-nocheck
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
 
 const API_BASE_URL = 'https://gestion-app-4ls9.onrender.com/api';
@@ -16,37 +16,10 @@ const apiClient = axios.create({
 interface TestResult {
   success: boolean;
   message: string;
-  data?: any;
+  data?: unknown;
 }
 
-async function signup(
-  username: string,
-  email: string,
-  password: string,
-  roleId: string
-): Promise<TestResult> {
-  try {
-    const response = await apiClient.post('/users/signup/', {
-      username,
-      email,
-      fullname: `Test ${username}`,
-      password1: password,
-      password2: password,
-      role: roleId,
-    });
-    return {
-      success: true,
-      message: `✅ Inscription ${username} réussie`,
-      data: response.data,
-    };
-  } catch (error: any) {
-    return {
-      success: false,
-      message: `❌ Inscription ${username} échouée: ${error.response?.data?.message || error.message}`,
-      data: error.response?.data,
-    };
-  }
-}
+// helper removed; tests use inline calls instead
 
 async function login(username: string, password: string): Promise<TestResult> {
   try {
@@ -67,10 +40,11 @@ async function login(username: string, password: string): Promise<TestResult> {
         refresh,
       },
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const err = error as any;
     return {
       success: false,
-      message: `❌ Connexion ${username} échouée: ${error.response?.data?.message || error.message}`,
+      message: `❌ Connexion ${username} échouée: ${err.response?.data?.message || err.message}`,
     };
   }
 }
@@ -86,12 +60,12 @@ async function runTests() {
   console.log('🔑 Obtention d\'un token super-admin');
   const superAdminCreds = { username: 'admin', password: 'Admin@2025' };
   const superAdminLogin = await login(superAdminCreds.username, superAdminCreds.password);
-  if (!superAdminLogin.success || !superAdminLogin.data?.access) {
+    if (!superAdminLogin.success || !(superAdminLogin.data as any)?.access) {
     console.error('❌ Impossible de récupérer le token super-admin, les tests suivants seront ignorés');
     return;
   }
   console.log('   ✅ Jeton super-admin récupéré');
-  const adminToken = superAdminLogin.data.access;
+    const adminToken = (superAdminLogin.data as any).access;
   const authClient = axios.create({
     baseURL: API_BASE_URL,
     headers: {
@@ -114,8 +88,9 @@ async function runTests() {
       role: CASHIER_ROLE_ID,
     });
     console.log(`✅ Inscription cashier réussie (status ${signResp.status})`);
-  } catch (e: any) {
-    console.error('❌ Inscription cashier échouée', e.response?.data || e.message);
+  } catch (e: unknown) {
+    const err = e as any;
+    console.error('❌ Inscription cashier échouée', err.response?.data || err.message);
   }
 
   console.log();
@@ -135,8 +110,9 @@ async function runTests() {
       role: ADMIN_ROLE_ID,
     });
     console.log(`✅ Inscription admin réussie (status ${signResp.status})`);
-  } catch (e: any) {
-    console.error('❌ Inscription admin échouée', e.response?.data || e.message);
+  } catch (e: unknown) {
+    const err = e as any;
+    console.error('❌ Inscription admin échouée', err.response?.data || err.message);
   }
   console.log();
   // 3. Vérifier un endpoint protégé avec le token admin
@@ -159,8 +135,9 @@ async function runTests() {
       await authClient.delete(`/users/${createResp.data.id}/`);
       console.log('   🗑️ Utilisateur temporaire supprimé');
     }
-  } catch (e: any) {
-    console.error('   ❌ Impossible d\'accéder à /users/all/ avec le token admin', e.message);
+  } catch (e: unknown) {
+    const err = e as any;
+    console.error('   ❌ Impossible d\'accéder à /users/all/ avec le token admin', err.message);
   }
   console.log();
   console.log('✅ Tests terminés');

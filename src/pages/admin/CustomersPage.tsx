@@ -174,7 +174,11 @@ export function CustomersPage() {
           { key: 'name', label: 'Nom', sortable: true },
           { key: 'email', label: 'Email', sortable: true },
           { key: 'phone', label: 'Téléphone' },
-          { key: 'is_active', label: 'Actif', render: (c) => (c.is_active ? '✓' : '✗') },
+          {
+            key: 'is_active',
+            label: 'Actif',
+            render: (_v, c) => (c?.is_active ? '✓' : '✗'),
+          },
         ]}
         searchFields={['name', 'email']}
         onEdit={handleEdit}

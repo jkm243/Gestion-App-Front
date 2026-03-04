@@ -11,14 +11,10 @@ export const productService = {
    * List all products (supports search param)
    */
   async getAllProducts(search?: string): Promise<Product[]> {
-    try {
-      const response = await apiClient.get('/products/all/', {
-        params: search ? { search } : {},
-      });
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.get('/products/all/', {
+      params: search ? { search } : {},
+    });
+    return response.data;
   },
 
   /**
@@ -36,14 +32,10 @@ export const productService = {
     max_price?: number;
     ordering?: string;
   }): Promise<PaginatedResponse<Product>> {
-    try {
-      const response = await apiClient.get('/products/all-pagination/', {
-        params,
-      });
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.get('/products/all-pagination/', {
+      params,
+    });
+    return response.data;
   },
 
   /**
@@ -51,12 +43,8 @@ export const productService = {
    * Get specific product by ID (UUID)
    */
   async getProductById(productId: string): Promise<Product> {
-    try {
-      const response = await apiClient.get(`/products/${productId}/`);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.get(`/products/${productId}/`);
+    return response.data;
   },
 
   /**
@@ -65,12 +53,8 @@ export const productService = {
    * Requires: { sku?, name?, description?, category?, supplier (uuid), unit_cost?, unit_price?, is_active? }
    */
   async createProduct(productData: CreateProductRequest): Promise<Product> {
-    try {
-      const response = await apiClient.post('/products/create/', productData);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.post('/products/create/', productData);
+    return response.data;
   },
 
   /**
@@ -78,12 +62,8 @@ export const productService = {
    * Update product
    */
   async updateProduct(productId: string, productData: UpdateProductRequest): Promise<Product> {
-    try {
-      const response = await apiClient.put(`/products/update/${productId}/`, productData);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.put(`/products/update/${productId}/`, productData);
+    return response.data;
   },
 
   /**
@@ -91,10 +71,6 @@ export const productService = {
    * Delete product (admin only)
    */
   async deleteProduct(productId: string): Promise<void> {
-    try {
-      await apiClient.delete(`/products/delete/${productId}/`);
-    } catch (error) {
-      throw error;
-    }
+    await apiClient.delete(`/products/delete/${productId}/`);
   },
 };

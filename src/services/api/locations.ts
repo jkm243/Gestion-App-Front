@@ -11,12 +11,8 @@ export const locationService = {
    * List all locations
    */
   async getAllLocations(): Promise<Location[]> {
-    try {
-      const response = await apiClient.get('/locations/all/');
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.get('/locations/all/');
+    return response.data;
   },
 
   /**
@@ -24,12 +20,8 @@ export const locationService = {
    * Get specific location by ID (UUID)
    */
   async getLocationById(locationId: string): Promise<Location> {
-    try {
-      const response = await apiClient.get(`/locations/${locationId}/`);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.get(`/locations/${locationId}/`);
+    return response.data;
   },
 
   /**
@@ -38,12 +30,8 @@ export const locationService = {
    * Requires: { name?, description?, is_active? }
    */
   async createLocation(locationData: CreateLocationRequest): Promise<Location> {
-    try {
-      const response = await apiClient.post('/locations/create/', locationData);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.post('/locations/create/', locationData);
+    return response.data;
   },
 
   /**
@@ -51,12 +39,8 @@ export const locationService = {
    * Update location
    */
   async updateLocation(locationId: string, locationData: UpdateLocationRequest): Promise<Location> {
-    try {
-      const response = await apiClient.put(`/locations/update/${locationId}/`, locationData);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.put(`/locations/update/${locationId}/`, locationData);
+    return response.data;
   },
 
   /**
@@ -64,14 +48,10 @@ export const locationService = {
    * Toggle location active/inactive status
    */
   async toggleLocationStatus(locationId: string, isActive: boolean): Promise<Location> {
-    try {
-      const response = await apiClient.patch(`/locations/activate-deactivate/${locationId}/`, null, {
-        params: { is_active: isActive },
-      });
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.patch(`/locations/activate-deactivate/${locationId}/`, null, {
+      params: { is_active: isActive },
+    });
+    return response.data;
   },
 
   /**
@@ -79,10 +59,6 @@ export const locationService = {
    * Delete location
    */
   async deleteLocation(locationId: string): Promise<void> {
-    try {
-      await apiClient.delete(`/locations/delete/${locationId}/`);
-    } catch (error) {
-      throw error;
-    }
+    await apiClient.delete(`/locations/delete/${locationId}/`);
   },
 };
