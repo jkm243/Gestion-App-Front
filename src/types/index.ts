@@ -35,9 +35,9 @@ export interface AuthTokens {
 
 export interface AuthState {
   user: User | null;
-  tokens: AuthTokens | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  authResolved: boolean;
   error: string | null;
 }
 

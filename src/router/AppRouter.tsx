@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { LoginPage } from '../pages/auth/LoginPage';
 import { SignupPage } from '../pages/auth/SignupPage';
 import { AdminDashboard } from '../pages/admin/Dashboard';
@@ -22,61 +22,65 @@ import { NotFoundPage, UnauthorizedPage } from '../pages/ErrorPages';
 import { AdminLayout } from "../components/layouts/AdminLayout";
 import { CashierLayout } from "../components/layouts/CashierLayout";
 import {
+  AppEntryRoute,
   ProtectedRoute,
   AdminRoute,
   CashierRoute,
   PublicRoute,
-} from "../components/RouteGuards";
+} from "../features/auth/RouteGuards";
+import { AuthBootstrap } from '../features/auth/AuthBootstrap';
 
 export function AppRouter() {
   return (
     <Router>
-      <Routes>
-        {/* Root redirect */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+      <AuthBootstrap>
+        <Routes>
+          {/* Root redirect */}
+          <Route path="/" element={<AppEntryRoute />} />
 
-        {/* Public Routes */}
-        <Route element={<PublicRoute />}>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-        </Route>
+          {/* Public Routes */}
+          <Route element={<PublicRoute />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+          </Route>
 
-        {/* Protected Routes */}
-        <Route element={<ProtectedRoute />}>
-          {/* Admin Routes */}
-          <Route element={<AdminRoute />}>
-            <Route element={<AdminLayout />}>
-              <Route path="/admin/dashboard" element={<AdminDashboard />} />
-              <Route path="/admin/users" element={<UsersPage />} />
-              <Route path="/admin/products" element={<ProductsPage />} />
-              <Route path="/admin/suppliers" element={<SuppliersPage />} />
-              <Route path="/admin/customers" element={<CustomersPage />} />
-              <Route path="/admin/locations" element={<LocationsPage />} />
-              <Route path="/admin/stocks" element={<StocksPage />} />
-              <Route path="/admin/sales" element={<SalesPage />} />
-              <Route path="/admin/analytics" element={<AnalyticsPage />} />
-              <Route path="/admin/invoices" element={<InvoicesPage />} />
-              <Route path="/admin/settings" element={<SettingsPage />} />
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute />}>
+            {/* Admin Routes */}
+            <Route element={<AdminRoute />}>
+              <Route element={<AdminLayout />}>
+                <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/admin/users" element={<UsersPage />} />
+                <Route path="/admin/products" element={<ProductsPage />} />
+                <Route path="/admin/suppliers" element={<SuppliersPage />} />
+                <Route path="/admin/customers" element={<CustomersPage />} />
+                <Route path="/admin/locations" element={<LocationsPage />} />
+                <Route path="/admin/stocks" element={<StocksPage />} />
+                <Route path="/admin/sales" element={<SalesPage />} />
+                <Route path="/admin/analytics" element={<AnalyticsPage />} />
+                <Route path="/admin/invoices" element={<InvoicesPage />} />
+                <Route path="/admin/settings" element={<SettingsPage />} />
+              </Route>
+            </Route>
+
+            {/* Cashier Routes */}
+            <Route element={<CashierRoute />}>
+              <Route element={<CashierLayout />}>
+                <Route path="/cashier" element={<CashierDashboard />} />
+                <Route path="/cashier/quick" element={<QuickSalePage />} />
+                <Route path="/cashier/cart" element={<CartPage />} />
+                <Route path="/cashier/payment" element={<PaymentPage />} />
+                <Route path="/cashier/history" element={<HistoryPage />} />
+                <Route path="/cashier/stock" element={<StockPage />} />
+              </Route>
             </Route>
           </Route>
 
-          {/* Cashier Routes */}
-          <Route element={<CashierRoute />}>
-            <Route element={<CashierLayout />}>
-              <Route path="/cashier" element={<CashierDashboard />} />
-              <Route path="/cashier/quick" element={<QuickSalePage />} />
-              <Route path="/cashier/cart" element={<CartPage />} />
-              <Route path="/cashier/payment" element={<PaymentPage />} />
-              <Route path="/cashier/history" element={<HistoryPage />} />
-              <Route path="/cashier/stock" element={<StockPage />} />
-            </Route>
-          </Route>
-        </Route>
-
-        {/* Error Routes */}
-        <Route path="/unauthorized" element={<UnauthorizedPage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+          {/* Error Routes */}
+          <Route path="/unauthorized" element={<UnauthorizedPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </AuthBootstrap>
     </Router>
   );
 }

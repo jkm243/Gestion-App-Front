@@ -1,18 +1,36 @@
 import { useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 import { Menu, X, LogOut, Settings, Bell, Search } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '../../services/hooks';
-import { logout } from '../../services/store/slices/authSlice';
+import { logoutAsync } from '../../services/store/slices/authSlice';
 
 export function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { enqueueSnackbar } = useSnackbar();
   const { user } = useAppSelector((state) => state.auth);
 
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate('/login');
+  const handleLogout = async () => {
+    const displayName = user?.fullname?.trim() || user?.username || user?.email || 'Utilisateur';
+
+    try {
+      await dispatch(logoutAsync()).unwrap();
+      enqueueSnackbar(`Déconnexion réussie. À bientôt ${displayName}.`, {
+        variant: 'success',
+      });
+      navigate('/login', { replace: true });
+    } catch (logoutError) {
+      const message =
+        typeof logoutError === 'string'
+          ? logoutError
+          : 'La déconnexion a échoué. Veuillez réessayer.';
+
+      enqueueSnackbar(message, {
+        variant: 'error',
+      });
+    }
   };
 
   const menuItems = [

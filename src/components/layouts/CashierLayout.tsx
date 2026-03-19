@@ -1,7 +1,7 @@
 import { useNavigate, Outlet } from 'react-router-dom';
 import { LogOut, ShoppingCart, Clock, Package } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '../../services/hooks';
-import { logout } from '../../services/store/slices/authSlice';
+import { logoutAsync } from '../../services/store/slices/authSlice';
 
 export function CashierLayout() {
   const navigate = useNavigate();
@@ -9,7 +9,7 @@ export function CashierLayout() {
   const { user } = useAppSelector((state) => state.auth);
 
   const handleLogout = () => {
-    dispatch(logout());
+    void dispatch(logoutAsync());
     navigate('/login');
   };
 
